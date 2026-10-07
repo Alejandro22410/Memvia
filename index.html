@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Memvia</title>
+  <meta name="description" content="Tu familia y dónde vive, en un mapa fácil de leer.">
+  <meta name="theme-color" content="#0B6E6E">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="app" id="app" data-modo="inicio">
+    <header class="top">
+      <div class="brand">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path class="logo-path" d="M8 38V14l16 16 16-16v24"/>
+          <circle class="logo-dot" cx="40" cy="38" r="5"/>
+        </svg>
+        <b>Memvia</b>
+      </div>
+      <div class="tools">
+        <button class="tool" id="btnLetra" type="button"></button>
+        <button class="tool" id="btnTema" type="button"></button>
+      </div>
+    </header>
+
+    <!-- Primera vez: configurar la casa -->
+    <section class="bienvenida" id="bienvenida" aria-labelledby="bienTitulo" hidden>
+      <p class="eyebrow">Para empezar</p>
+      <h1 id="bienTitulo">¿Dónde está su casa?</h1>
+      <p class="lead">Memvia necesita saber desde dónde se camina hasta cada familiar. Lo configura un familiar o cuidador, una sola vez.</p>
+      <form id="formBienvenida" class="form" novalidate>
+        <label for="bNombre">Nombre de la persona (opcional)</label>
+        <input id="bNombre" maxlength="30" autocomplete="off" placeholder="Por ejemplo: Antonia">
+        <div id="slotBuscadorB"></div>
+        <p class="err" id="bErr" role="alert" hidden></p>
+        <div class="actions">
+          <button class="btn primary" type="submit">Empezar</button>
+          <button class="btn" type="button" id="btnEjemplo">Probar con datos de ejemplo</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="hoy" id="hoy" aria-label="Hoy" hidden></section>
+
+    <section class="stage" id="stage" aria-label="Mapa y detalle" hidden>
+      <div class="mapwrap" id="mapwrap">
+        <div id="mapa" role="region" aria-label="Mapa con tu casa y la de tus familiares"></div>
+        <button class="btn mapbtn" id="btnTodo" type="button" hidden>Ver a todos</button>
+      </div>
+      <div class="detail" id="detalle" aria-live="polite"></div>
+    </section>
+
+    <section class="family" id="familia" aria-labelledby="famTitulo" hidden>
+      <div class="sec-head">
+        <h2 id="famTitulo">Tu familia</h2>
+        <p>Toca una cara para ver dónde vive.</p>
+      </div>
+      <ul class="people" id="lista"></ul>
+    </section>
+
+    <footer class="foot" id="pie">
+      <p class="label">Para familiares y cuidadores</p>
+      <div class="actions">
+        <button class="btn" id="btnAnadir" type="button" hidden>Añadir familiar</button>
+        <button class="btn" id="btnAjustes" type="button" hidden>Ajustes y copia de seguridad</button>
+      </div>
+      <p>Los datos se guardan solo en este dispositivo. Mapa de OpenStreetMap, direcciones de Nominatim y rutas a pie de FOSSGIS. Memvia ayuda a recordar y orientarse; no sustituye la supervisión de un cuidador.</p>
+    </footer>
+  </div>
+
+  <!-- Añadir o editar familiar -->
+  <dialog id="dlgPersona" aria-labelledby="pTitulo">
+    <form id="formPersona" class="form dlg" novalidate>
+      <h2 id="pTitulo">Añadir familiar</h2>
+      <label for="pNombre">Nombre</label>
+      <input id="pNombre" maxlength="24" autocomplete="off">
+      <label for="pRel">Quién es</label>
+      <select id="pRel">
+        <option>Tu hijo</option><option>Tu hija</option><option>Tu nieto</option><option>Tu nieta</option>
+        <option>Tu hermano</option><option>Tu hermana</option><option>Tu sobrino</option><option>Tu sobrina</option>
+        <option>Tu amigo</option><option>Tu amiga</option><option>Tu vecino</option><option>Tu vecina</option>
+      </select>
+      <div id="slotBuscadorP"></div>
+      <fieldset>
+        <legend>Color de su cara</legend>
+        <div class="swatches" id="muestras"></div>
+      </fieldset>
+      <label for="pNota">Algo que ayude a recordarle</label>
+      <textarea id="pNota" rows="2" maxlength="120" placeholder="Por ejemplo: le gusta cantar contigo."></textarea>
+      <p class="err" id="pErr" role="alert" hidden></p>
+      <div class="actions">
+        <button class="btn primary" type="submit">Guardar</button>
+        <button class="btn" type="button" id="pCancelar">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ajustes -->
+  <dialog id="dlgAjustes" aria-labelledby="aTitulo">
+    <form id="formAjustes" class="form dlg" novalidate>
+      <h2 id="aTitulo">Ajustes</h2>
+      <label for="aNombre">Nombre de la persona</label>
+      <input id="aNombre" maxlength="30" autocomplete="off">
+      <div id="slotBuscadorA"></div>
+      <div class="actions">
+        <button class="btn primary" type="submit">Guardar cambios</button>
+        <button class="btn" type="button" id="aCerrar">Cerrar</button>
+      </div>
+      <p class="err" id="aErr" role="alert" hidden></p>
+      <hr>
+      <p class="label">Copia de seguridad</p>
+      <div class="actions">
+        <button class="btn" type="button" id="aExportar">Descargar copia</button>
+        <label class="btn" for="aImportar">Cargar copia</label>
+        <input id="aImportar" type="file" accept="application/json,.json" class="oculto">
+      </div>
+      <div id="aImportConfirm" class="confirma" hidden>
+        <p>Esto reemplaza todos los datos actuales.</p>
+        <div class="actions">
+          <button class="btn primary" type="button" id="aImportSi">Reemplazar</button>
+          <button class="btn" type="button" id="aImportNo">Cancelar</button>
+        </div>
+      </div>
+      <hr>
+      <p class="label">Zona delicada</p>
+      <div class="actions">
+        <button class="btn" type="button" id="aEjemplo">Cargar datos de ejemplo</button>
+        <button class="btn" type="button" id="aBorrar">Borrar todo</button>
+      </div>
+      <div id="aBorrarConfirm" class="confirma" hidden>
+        <p>Se borran la casa y todos los familiares de este dispositivo.</p>
+        <div class="actions">
+          <button class="btn primary" type="button" id="aBorrarSi">Sí, borrar todo</button>
+          <button class="btn" type="button" id="aBorrarNo">No</button>
+        </div>
+      </div>
+      <p class="ayuda" id="aMsg" role="status"></p>
+    </form>
+  </dialog>
+</body>
+</html>
