@@ -1,23 +1,24 @@
-// Service worker de Memvia: permite abrir la app sin conexión.
-// Guarda la propia app y las librerías externas (Leaflet y tipografías).
-// No guarda direcciones, rutas ni mapas: esas peticiones van siempre a internet.
-
-const VERSION = 'memvia-v1';
-const APP = [
-  './', 'index.html', 'css/styles.css',
-  'js/app.js', 'js/store.js', 'js/geo.js', 'js/map.js',
-  'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'
+// Service worker de Memvia.
+// - Archivos de la propia app: primero red, y si no hay internet, copia guardada.
+// - Librerías externas (Leaflet, iconos, letras): primero copia guardada.
+// - Firebase, mapas, buscador de direcciones y rutas: no se tocan (siempre en directo).
+const VERSION = 'memvia-v5';
+const SHELL = [
+  './', 'index.html', 'manifest.webmanifest',
+  'css/styles.css',
+  'js/app.js', 'js/config.js', 'js/demo.js', 'js/buscador.js', 'js/mapa.js', 'js/geo.js',
+  'icons/icon192.png', 'icons/icon512.png', 'icons/icon-maskable-512.png'
 ];
-const EXTERNOS = ['unpkg.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+const CDN = ['unpkg.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com', 'www.gstatic.com'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(APP)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((claves) => Promise.all(claves.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -27,28 +28,22 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  if (url.origin === self.location.origin) {
-    // Primero la red, para ver los cambios al recargar; sin conexión, la copia guardada.
+  if (url.origin === location.origin) {
     e.respondWith(
       fetch(req)
         .then((res) => {
-          const copia = res.clone();
-          caches.open(VERSION).then((c) => c.put(req, copia));
+          if (res.ok) { const copia = res.clone(); caches.open(VERSION).then((c) => c.put(req, copia)); }
           return res;
         })
-        .catch(() => caches.match(req).then((r) => r || caches.match('index.html')))
+        .catch(() => caches.match(req).then((r) => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())))
     );
     return;
   }
 
-  if (EXTERNOS.includes(url.hostname)) {
-    // Primero la copia guardada: Leaflet y las tipografías no cambian.
+  if (CDN.includes(url.hostname)) {
     e.respondWith(
-      caches.match(req).then((r) => r || fetch(req).then((res) => {
-        if (res.ok || res.type === 'opaque') {
-          const copia = res.clone();
-          caches.open(VERSION).then((c) => c.put(req, copia));
-        }
+      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+        if (res.ok || res.type === 'opaque') { const copia = res.clone(); caches.open(VERSION).then((c) => c.put(req, copia)); }
         return res;
       }))
     );

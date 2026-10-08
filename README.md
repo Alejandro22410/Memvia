@@ -1,56 +1,80 @@
-# Memvia
+# Memvia · Tu gente, siempre cerca
 
-App para personas mayores con alzheimer. Muestra a la familia como caras (iniciales y color, sin fotos) conectadas a un mapa real con la casa de cada una. Al tocar una cara se ve quién es, su dirección, cuánto se tarda andando desde casa y cómo llegar, y se puede escuchar en voz alta.
+Memvia es una app para personas con alzheimer. Muestra a la familia con su cara y su nombre, dice quién es cada persona y **dónde vive**, en un mapa real, con el camino a pie desde casa. También ayuda con la medicación, las tareas del día y los recuerdos.
 
-No necesita instalar nada: son archivos estáticos (HTML, CSS y JavaScript).
+Proyecto para **Coolest Projects**.
 
-## Probarla en tu ordenador
+## Qué hace
+
+- **Familia**: foto (o icono), nombre, parentesco y una frase especial. Un toque y la app lo lee en voz alta. Llamada y WhatsApp con un botón.
+- **Mapa real** (OpenStreetMap): casa de cada familiar y lugares importantes (farmacia, centro de salud...). Al tocar uno se ve cuánto se tarda **andando** y los pasos del camino, escritos en español. También hay un **esquema** sencillo de distancias que funciona sin internet.
+- **Mi día**: recordatorios con hora y aviso.
+- **Medicación**: horarios y registro de tomas.
+- **Recuerdos**: pequeñas historias de la familia.
+- **Juego**: "¿Quién es?", para ejercitar la memoria con las caras de la familia.
+- **SOS**: llama a un familiar.
+- **Hecha para leer fácil**: modo simple, letra grande, tema claro / oscuro / automático, botones grandes.
+- **Cuentas** (Firebase): un cuidador puede preparar los datos y la persona los ve en su dispositivo.
+- **Modo demostración**: se prueba sin cuenta, con datos inventados que solo se guardan en ese dispositivo.
+- **Se instala como app** (PWA) en el móvil, y abre sin internet para ver lo ya guardado.
+
+## Probarla
+
+Online (GitHub Pages): activa Pages en el repositorio (Settings → Pages → rama `main`, carpeta `/ (root)`). La dirección será `https://TU-USUARIO.github.io/NOMBRE-DEL-REPO/`.
+
+En tu ordenador, con cualquier servidor estático:
 
 ```bash
-cd memvia
-python3 -m http.server 8080
+python3 -m http.server 8080      # o: npx serve
 ```
 
-Abre http://localhost:8080. Sirve cualquier otro servidor estático (`npx serve`, la extensión Live Server de VS Code...). Hace falta conexión a internet para el mapa, las direcciones y las rutas.
+y abre http://localhost:8080. No hay paso de compilación.
 
-Al abrirla por primera vez, un familiar o cuidador escribe la dirección de la casa y pulsa **Buscar**. Con **Probar con datos de ejemplo** se carga un barrio de lugares públicos de Madrid para verla funcionando.
+Pulsa **Probar sin cuenta (demostración)** para verla funcionando.
 
-## Usarla en el móvil
+### Instalarla como app
 
-Para instalarla en el móvil (Añadir a pantalla de inicio) necesita una dirección https. La forma más fácil es subir esta carpeta tal cual a Netlify Drop, Cloudflare Pages o GitHub Pages. No hay paso de compilación.
+- **Android (Chrome)**: menú ⋮ → *Instalar aplicación*.
+- **iPhone (Safari)**: Compartir → *Añadir a pantalla de inicio*.
+- **APK**: en <https://www.pwabuilder.com> pega la dirección https de la app y descarga el paquete para Android.
 
-Una vez abierta con https, también funciona sin conexión para ver lo ya guardado. El mapa, las búsquedas y las rutas siempre necesitan internet.
+## Poner tu propia cuenta de Firebase
 
-## Qué hace cada parte
+1. En <https://console.firebase.google.com> crea un proyecto, activa **Authentication → Correo y contraseña** y **Firestore**.
+2. Copia la configuración web en `js/config.js`.
+3. En Firestore → Reglas, pega el contenido de `firestore.rules`. Así cada persona solo puede leer y escribir **sus** datos.
+4. En Authentication → Configuración → Dominios autorizados, añade el dominio donde publiques la app.
+
+## Archivos
 
 | Archivo | Función |
 | --- | --- |
-| `index.html` | Estructura de la pantalla y los diálogos |
-| `css/styles.css` | Diseño: colores, letra, modo oscuro, tamaños táctiles |
-| `js/app.js` | Pantallas y eventos: familia, detalle, ajustes, copia de seguridad |
-| `js/store.js` | Guardado en el dispositivo y validación de datos |
-| `js/geo.js` | Búsqueda de direcciones y rutas a pie, con ruta aproximada si falla el servicio |
-| `js/map.js` | Mapa con Leaflet y marcadores |
+| `index.html` | Pantallas y diálogos |
+| `css/styles.css` | Diseño, temas claro y oscuro, tamaños táctiles |
+| `js/app.js` | Lógica: familia, mapa, rutas, medicación, cuentas, modo demo |
+| `js/mapa.js` | Mapa Leaflet y marcadores |
+| `js/buscador.js` | Buscador de direcciones (elige tú el resultado correcto) |
+| `js/geo.js` | Direcciones (Nominatim) y rutas a pie (OSRM), con ruta aproximada si falla |
+| `js/demo.js` | Datos de ejemplo inventados |
+| `js/config.js` | Configuración de Firebase |
 | `sw.js`, `manifest.webmanifest` | Instalación y modo sin conexión |
+| `firestore.rules` | Reglas de seguridad de la base de datos |
 
-## Datos y privacidad
+## Privacidad
 
-- Todo se guarda solo en este dispositivo (`localStorage`). No hay servidor ni cuenta.
-- Para buscar una dirección, el texto que escribes se envía a Nominatim (OpenStreetMap). Para calcular rutas, se envían las coordenadas de la casa y del familiar a FOSSGIS. No se envía nada más.
-- La copia de seguridad (Ajustes, Descargar copia) es un archivo con direcciones exactas. Guárdalo en un sitio seguro.
-- Borrar los datos del navegador borra la app. Haz una copia de vez en cuando.
+- Con cuenta, los datos (nombres, fotos, direcciones, medicación) se guardan en Firebase, en un documento por usuario protegido por las reglas.
+- En modo demostración, nada sale del dispositivo.
+- Para buscar una dirección, el texto se envía a Nominatim (OpenStreetMap). Para calcular una ruta, las coordenadas de la casa y del familiar se envían a FOSSGIS. Nada más.
+- Usa datos inventados o permiso de la familia en las demos públicas.
 
-## Límites conocidos
+## Límites
 
-- Los servicios gratuitos de OpenStreetMap, Nominatim y FOSSGIS son para uso personal y de poco volumen. La app busca solo al pulsar el botón y espera un segundo entre búsquedas, como pide Nominatim. Si Memvia llega a mucha gente, hay que contratar o alojar un servicio de mapas y direcciones.
-- Los datos no se sincronizan entre dispositivos. Para que un cuidador edite desde su móvil y lo vea la persona en su tableta hace falta un servidor y cuentas.
-- Los pasos de la ruta vienen de OSRM y se traducen al español con reglas simples. Revisa algunas rutas reales antes de confiar en ellas.
-- Memvia ayuda a recordar y orientarse. No es un sistema de seguridad ni sustituye a un cuidador.
-- Leaflet se carga desde unpkg.com. Para no depender de ese servicio, descarga `leaflet.js` y `leaflet.css` (versión 1.9.4) a una carpeta `vendor/` y cambia las dos líneas de `index.html`.
+- Memvia ayuda a recordar y orientarse. **No es un sistema de seguridad** ni sustituye a un cuidador.
+- Las fotos se guardan dentro del documento de Firestore, que admite cerca de 1 MB. Con muchas fotos grandes la app avisa y no guarda.
+- Los servicios gratuitos de OpenStreetMap, Nominatim y FOSSGIS son para poco volumen. La app busca solo al pulsar el botón y espera entre búsquedas.
+- Los pasos de la ruta se traducen al español con reglas sencillas; algunas calles pueden sonar raras.
+- El mapa, las búsquedas y las rutas necesitan internet.
 
-## Siguientes pasos posibles
+## Créditos
 
-1. Sincronizar entre dispositivos con una cuenta de cuidador.
-2. Fotos opcionales, además de las iniciales.
-3. Llamar o videollamar al familiar desde su tarjeta.
-4. Un recordatorio con voz de las visitas del día.
+[OpenStreetMap](https://www.openstreetmap.org/copyright) · [Nominatim](https://nominatim.org) · [FOSSGIS OSRM](https://routing.openstreetmap.de) · [Leaflet](https://leafletjs.com) · [Firebase](https://firebase.google.com) · [Tabler Icons](https://tabler.io/icons) · Fuentes Fraunces y Nunito (Google Fonts).
