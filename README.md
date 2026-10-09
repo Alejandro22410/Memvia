@@ -1,6 +1,8 @@
 
 ### Proyecto para **Coolest Projects**.
 ### Alejandro Narvaez Jaime | Codelearn Gava
+![imagen](https://github.com/Alejandro22410/Memvia/blob/main/icons/icon192.png)
+
 # Memvia · Tu gente, siempre cerca
 
 Memvia es una app para ayudar a las personas con alzheimer. Muestra a la familia con su cara y su nombre, dice quién es cada persona y **dónde vive**, en un mapa real, con el camino a pie desde casa. También ayuda con la medicación, las tareas del día y los recuerdos.
@@ -135,5 +137,4 @@ Pulsa **Probar sin cuenta (demostración)** para ver una demostración.
 - Los pasos de la ruta se traducen al español con reglas sencillas; algunas calles pueden sonar raras.
 - El mapa, las búsquedas y las rutas necesitan internet.
 
- ![imagen](https://github.com/Alejandro22410/Memvia/blob/main/icons/icon192.png)
-
+ 
