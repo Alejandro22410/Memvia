@@ -18,6 +18,60 @@ Proyecto para **Coolest Projects**.
 - **Modo demostración**: se prueba sin cuenta, con datos inventados que solo se guardan en ese dispositivo.
 - **Se instala como app** (PWA) en el móvil, y abre sin internet para ver lo ya guardado.
 
+## Cómo funciona
+
+**Las piezas de Memvia**
+
+```mermaid
+flowchart LR
+    P["Persona mayor<br/>o su cuidador"] --> A["App Memvia<br/>(web instalable)"]
+    A --> F["Familia, medicación,<br/>recordatorios y recuerdos"]
+    A --> M["Mapa con la casa<br/>de cada familiar"]
+    A --> C["Cuenta de usuario<br/>(Firebase Authentication)"]
+    C --> D[("Datos guardados<br/>(Cloud Firestore)")]
+    M --> O["OpenStreetMap<br/>mapa, direcciones y rutas a pie"]
+```
+
+**Qué pasa al abrir la app**
+
+```mermaid
+flowchart TD
+    I["Abrir Memvia"] --> W["Pantalla de bienvenida"]
+    W --> G{"¿Tienes cuenta?"}
+    G -->|"No, solo probar"| DEMO["Demostración<br/>datos inventados en tu aparato"]
+    G -->|"Sí"| L["Entrar con correo y contraseña"]
+    G -->|"Crear cuenta nueva"| K["Marcar el consentimiento<br/>para datos de salud"]
+    K --> L
+    DEMO --> APP["App con 6 pestañas"]
+    L --> APP
+    APP --> T["Familia · Mapa · Mi día<br/>Medicación · Recuerdos · Juego"]
+```
+
+**Qué pasa al tocar a un familiar en el mapa**
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant A as App Memvia
+    participant R as Servicio de rutas a pie
+    U->>A: Toca a un familiar
+    A->>R: Coordenadas de casa y de la casa del familiar
+    R-->>A: Camino y pasos
+    A-->>U: Minutos andando, pasos en español y línea en el mapa
+    Note over A,R: Si falla el servicio, se muestra una línea recta aproximada
+```
+
+**A dónde van los datos**
+
+```mermaid
+flowchart LR
+    U["Tú escribes<br/>tus datos"] --> A["App Memvia"]
+    A -->|"Con cuenta"| FB[("Firebase<br/>solo tu usuario puede verlos")]
+    A -->|"Demostración"| LS[("Tu navegador<br/>no sale del aparato")]
+    A -->|"Al pulsar Buscar"| N["Nominatim<br/>recibe la dirección escrita"]
+    A -->|"Al elegir ruta"| O["FOSSGIS<br/>recibe coordenadas"]
+```
+
 ## Probarla
 
 Online (GitHub Pages): activa Pages en el repositorio (Settings → Pages → rama `main`, carpeta `/ (root)`). La dirección será `https://TU-USUARIO.github.io/NOMBRE-DEL-REPO/`.
