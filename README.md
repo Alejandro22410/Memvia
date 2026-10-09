@@ -1,3 +1,6 @@
+
+
+### Alejandro Narvaez Jaime | Codelearn Gava
 # Memvia · Tu gente, siempre cerca
 
 Memvia es una app para personas con alzheimer. Muestra a la familia con su cara y su nombre, dice quién es cada persona y **dónde vive**, en un mapa real, con el camino a pie desde casa. También ayuda con la medicación, las tareas del día y los recuerdos.
