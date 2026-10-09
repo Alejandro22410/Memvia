@@ -34,6 +34,7 @@
       <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#4A3B32;"><i class="ti ti-pill" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Medicación, tareas del día y recuerdos</div>
     </div>
     <button id="welcome-continue-btn" style="width:100%; height:52px; border:none; border-radius:999px; background:linear-gradient(135deg,#5B3FD0,#8B6CF2); color:#fff; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 8px 20px rgba(91,63,208,.35);">Continuar</button>
+    <p style="margin:14px 0 0; font-size:12px; color:#7A6C61;">Al continuar aceptas que lo uses con estos <a href="privacidad.html" target="_blank" rel="noopener" style="color:#4A2FB8; font-weight:700;">avisos de privacidad</a>. No se guardan datos de salud sin tu permiso.</p>
     <label style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; font-size:12px; color:#A79A8E; cursor:pointer;">
       <input type="checkbox" id="welcome-skip-check" style="width:14px; height:14px;"> No volver a mostrar esta pantalla
     </label>
@@ -57,11 +58,16 @@
     <p style="margin:0 0 8px; text-align:center; color:#666; font-size:14px;">Entra o crea tu cuenta</p>
     <input id="auth-email" type="email" placeholder="Tu email" required style="height:46px; font-size:16px; padding:0 14px; border-radius:12px; border:1px solid #ddd;" />
     <input id="auth-password" type="password" placeholder="Contraseña (mínimo 6 caracteres)" required style="height:46px; font-size:16px; padding:0 14px; border-radius:12px; border:1px solid #ddd;" />
+    <label id="auth-consent-label" style="display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.45; color:#4A3B32; cursor:pointer;">
+      <input type="checkbox" id="auth-consent" style="width:20px; height:20px; flex:none; margin-top:1px;">
+      <span>Solo para <strong>crear una cuenta</strong>: he leído la <a href="privacidad.html" target="_blank" rel="noopener" style="color:#4A2FB8; font-weight:700;">Política de privacidad</a> y <strong>doy mi consentimiento explícito</strong> para que Memvia guarde los datos de salud (como la medicación) que yo escriba. Puedo retirarlo cuando quiera.</span>
+    </label>
     <p id="auth-error" style="display:none; color:#c23b3b; font-size:13px; margin:0;"></p>
     <button type="submit" style="height:48px; border:none; border-radius:999px; background:linear-gradient(135deg,#7C5CFF,#FF7A8A); color:#fff; font-weight:600; font-size:16px; cursor:pointer;">Entrar</button>
     <button type="button" id="auth-signup-btn" style="height:48px; border:1px solid #ddd; border-radius:999px; background:#fff; font-weight:600; font-size:15px; cursor:pointer;">Crear cuenta nueva</button>
     <button type="button" id="auth-demo-btn" class="auth-demo">Probar sin cuenta (demostración)</button>
     <p id="auth-note" class="auth-note" style="display:none;"></p>
+    <p class="auth-note" style="margin-top:0;"><a href="privacidad.html" target="_blank" rel="noopener" style="color:#4A2FB8; font-weight:700;">Privacidad y aviso legal</a></p>
   </form>
 </div>
 
@@ -281,6 +287,8 @@
         <input id="import-file" type="file" accept="application/json" style="display:none;" />
       </div>
       <button id="wipe-btn" class="secondary-btn" style="width:100%; margin-top:8px; color: var(--text-danger);"><i class="ti ti-trash" aria-hidden="true"></i> Borrar todos los datos</button>
+      <button id="delete-account-btn" class="secondary-btn" style="width:100%; margin-top:8px; color: var(--text-danger);"><i class="ti ti-user-x" aria-hidden="true"></i> Eliminar mi cuenta</button>
+      <p class="hint-text" style="margin:12px 0 0; text-align:center;"><a href="privacidad.html" target="_blank" rel="noopener" style="color:var(--text-accent); font-weight:700;">Política de privacidad y aviso legal</a></p>
     </div>
   </div>
 

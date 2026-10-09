@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Política de privacidad · Memvia</title>
+<meta name="description" content="Política de privacidad, bases legales y aviso legal de Memvia.">
+<meta name="theme-color" content="#5B3FD0">
+<link rel="icon" href="icons/icon192.png" type="image/png">
+<!--
+  NOTA PARA QUIEN PUBLIQUE LA APP
+  Este texto es una plantilla redactada para el RGPD (UE 2016/679), la LOPDGDD (LO 3/2018) y la LSSI (Ley 34/2002).
+  1) Sustituye todo lo que aparece como [[ENTRE DOBLES CORCHETES]] por tus datos reales. Mientras quede alguno,
+     la página muestra un aviso amarillo arriba (desaparece solo al completarlos).
+  2) Si cambias de proveedor (hosting, mapas, base de datos...) o añades funciones que usen datos, actualiza las secciones 4 y 7
+     y la fecha de la sección 17.
+  3) Una persona con tratamiento de datos de salud y de personas vulnerables debería revisar este texto con asesoría jurídica
+     o con el delegado de protección de datos de su centro antes de abrir la app al público.
+-->
+<style>
+  :root { --bg:#FBF7F2; --card:#ffffff; --text:#2A211C; --muted:#5E5666; --brand:#5B3FD0; --soft:#EEE9FF; --line:#E6E0F5; --warn-bg:#FFF3C4; --warn-text:#5C4400; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141026; --card:#221E3A; --text:#F2EFFF; --muted:#C4BEE3; --brand:#B9A6FF; --soft:#352E63; --line:#3A3560; --warn-bg:#4A3B00; --warn-text:#FFE9A6; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin:0; background:var(--bg); color:var(--text); font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:820px; margin:0 auto; }
+  header.top { display:flex; align-items:center; gap:14px; margin:8px 0 18px; }
+  header.top img { width:56px; height:56px; border-radius:16px; }
+  h1 { font-size:1.7rem; line-height:1.2; margin:0; }
+  h2 { font-size:1.3rem; margin:2.2rem 0 .6rem; line-height:1.3; }
+  h3 { font-size:1.05rem; margin:1.4rem 0 .4rem; }
+  p, li { max-width:70ch; }
+  a { color:var(--brand); font-weight:700; }
+  a:focus-visible, button:focus-visible { outline:3px solid var(--brand); outline-offset:3px; border-radius:6px; }
+  .back { display:inline-block; margin-bottom:6px; }
+  .meta { color:var(--muted); font-size:.95rem; margin:.2rem 0 0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px 20px; margin:14px 0; }
+  .sum { background:var(--soft); border-color:transparent; }
+  .sum ul { margin:.4rem 0 0; padding-left:1.2rem; }
+  nav.toc { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:14px 20px; margin:14px 0; }
+  nav.toc ol { margin:.3rem 0 0; padding-left:1.4rem; columns:2; column-gap:28px; }
+  @media (max-width:640px) { nav.toc ol { columns:1; } }
+  nav.toc li { break-inside:avoid; }
+  .tablewrap { overflow-x:auto; margin:.6rem 0; border:1px solid var(--line); border-radius:14px; background:var(--card); }
+  table { border-collapse:collapse; width:100%; min-width:560px; font-size:.95rem; line-height:1.5; }
+  th, td { text-align:left; vertical-align:top; padding:10px 12px; border-bottom:1px solid var(--line); }
+  th { background:var(--soft); }
+  tr:last-child td { border-bottom:0; }
+  .ph { background:var(--warn-bg); color:var(--warn-text); border-radius:6px; padding:0 5px; font-weight:700; }
+  #ph-banner { display:none; position:sticky; top:8px; z-index:5; background:var(--warn-bg); color:var(--warn-text); border-radius:14px; padding:12px 16px; font-weight:700; margin:10px 0; box-shadow:0 6px 18px rgba(0,0,0,.15); }
+  footer { color:var(--muted); font-size:.9rem; margin:2.4rem 0 1rem; }
+</style>
+</head>
+<body>
+<main>
+  <div id="ph-banner" role="status">Faltan datos por completar en esta página (los resaltados en amarillo). Este aviso desaparece solo cuando estén todos.</div>
+
+  <a class="back" href="./">← Volver a Memvia</a>
+  <header class="top">
+    <img src="icons/icon192.png" alt="" width="56" height="56">
+    <div>
+      <h1>Política de privacidad y aviso legal</h1>
+      <p class="meta">Memvia · Versión 2026-10-09 · Última actualización: 9 de octubre de 2026</p>
+    </div>
+  </header>
+
+  <section class="card sum" aria-labelledby="resumen">
+    <h2 id="resumen" style="margin-top:0;">En pocas palabras</h2>
+    <ul>
+      <li>Memvia guarda los datos que tú escribes: tu nombre, tu casa, tu familia, tus recordatorios y tu medicación.</li>
+      <li>Algunos de esos datos son de <strong>salud</strong> (la medicación). Solo los guardamos si nos das tu <strong>permiso claro</strong> al crear la cuenta, y puedes retirarlo cuando quieras.</li>
+      <li>No vendemos tus datos, no hay publicidad y no usamos herramientas para seguirte por internet.</li>
+      <li>Puedes <strong>descargar</strong> tus datos y <strong>eliminar tu cuenta</strong> desde Ajustes, sin pedir permiso a nadie.</li>
+      <li>Sin cuenta puedes usar la <strong>demostración</strong>: sus datos se quedan en tu aparato.</li>
+    </ul>
+  </section>
+
+  <nav class="toc" aria-label="Índice">
+    <strong>Índice</strong>
+    <ol>
+      <li><a href="#responsable">Quién es el responsable</a></li>
+      <li><a href="#datos">Qué datos tratamos</a></li>
+      <li><a href="#bases">Para qué los usamos y base legal</a></li>
+      <li><a href="#salud">Datos de salud y consentimiento</a></li>
+      <li><a href="#terceros-datos">Datos de familiares y de otras personas</a></li>
+      <li><a href="#destinatarios">Quién más recibe datos</a></li>
+      <li><a href="#transferencias">Transferencias fuera de la UE</a></li>
+      <li><a href="#plazos">Cuánto tiempo los conservamos</a></li>
+      <li><a href="#derechos">Tus derechos</a></li>
+      <li><a href="#seguridad">Seguridad</a></li>
+      <li><a href="#almacenamiento">Almacenamiento en tu dispositivo y cookies</a></li>
+      <li><a href="#menores">Menores de edad</a></li>
+      <li><a href="#automatizadas">Decisiones automáticas</a></li>
+      <li><a href="#demo">Modo demostración</a></li>
+      <li><a href="#reclamacion">Reclamaciones</a></li>
+      <li><a href="#legal">Aviso legal y límites del servicio</a></li>
+      <li><a href="#cambios">Cambios en esta política</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="responsable">1. Quién es el responsable</h2>
+  <p>El responsable del tratamiento de tus datos (quien decide para qué y cómo se usan) es:</p>
+  <div class="card">
+    <p style="margin:.2rem 0;"><strong>Responsable:</strong> <span class="ph">[[NOMBRE Y APELLIDOS, O NOMBRE DE LA ENTIDAD]]</span></p>
+    <p style="margin:.2rem 0;"><strong>Correo de contacto para privacidad:</strong> <span class="ph">[[CORREO ELECTRÓNICO DE CONTACTO]]</span></p>
+    <p style="margin:.2rem 0;"><strong>NIF y domicilio (si procede):</strong> <span class="ph">[[NIF Y DIRECCIÓN POSTAL, O «NO APLICA»]]</span></p>
+  </div>
+  <p>Memvia es un proyecto sin ánimo de lucro. No hay delegado de protección de datos designado; para cualquier asunto de privacidad escribe al correo de arriba.</p>
+
+  <h2 id="datos">2. Qué datos tratamos</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Datos</th><th>Qué incluyen</th><th>Quién los escribe</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Cuenta</strong></td><td>Correo electrónico, contraseña (nunca la vemos: la guarda Firebase Authentication de forma protegida) y un identificador interno.</td><td>La persona que crea la cuenta</td></tr>
+      <tr><td><strong>Perfil</strong></td><td>Nombre, dirección de casa y su ubicación en el mapa (latitud y longitud), tamaño de letra, tema y modo simple.</td><td>El usuario</td></tr>
+      <tr><td><strong>Familiares</strong></td><td>Nombre, parentesco, teléfono, dirección y su ubicación en el mapa, cumpleaños, foto, icono y una nota personal.</td><td>El usuario</td></tr>
+      <tr><td><strong>Lugares</strong></td><td>Nombre, tipo (por ejemplo farmacia o centro de salud), dirección y ubicación.</td><td>El usuario</td></tr>
+      <tr><td><strong>Salud</strong> (categoría especial)</td><td>Nombre de la medicación, dosis, hora y registro de tomas. También puede deducirse una situación de salud (por ejemplo, que el usuario tiene alzheimer) del uso de la app y de las notas que se escriban.</td><td>El usuario</td></tr>
+      <tr><td><strong>Día a día</strong></td><td>Recordatorios y tareas, recuerdos (títulos y textos). Las puntuaciones del juego no se guardan.</td><td>El usuario</td></tr>
+      <tr><td><strong>Consentimiento</strong></td><td>Versión de esta política aceptada y fecha y hora en que se aceptó.</td><td>Se guarda al crear la cuenta</td></tr>
+      <tr><td><strong>Técnicos</strong></td><td>Dirección IP y datos del navegador, que reciben de forma inevitable los servicios técnicos de la sección 6 al servir la app, el mapa y las cuentas.</td><td>Se generan al usar la app</td></tr>
+    </tbody>
+  </table></div>
+  <p>Memvia <strong>no</strong> pide datos que no necesite, no accede a tus contactos, ni a tu ubicación en tiempo real, ni a tu cámara sin que pulses el botón de hacer una foto.</p>
+
+  <h2 id="bases">3. Para qué los usamos y base legal</h2>
+  <p>El RGPD exige que cada uso de datos tenga una «base legal». Estas son las de Memvia:</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Para qué</th><th>Datos</th><th>Base legal</th></tr></thead>
+    <tbody>
+      <tr><td>Crear y mantener tu cuenta y que puedas entrar desde varios dispositivos.</td><td>Cuenta</td><td><strong>Ejecución del servicio que pides</strong> (art. 6.1.b RGPD).</td></tr>
+      <tr><td>Mostrar a tu familia, el mapa, los recordatorios y los recuerdos, y guardarlos en tu cuenta.</td><td>Perfil, familiares, lugares, día a día</td><td><strong>Ejecución del servicio que pides</strong> (art. 6.1.b RGPD).</td></tr>
+      <tr><td>Avisarte de la medicación y llevar el registro de tomas.</td><td>Salud</td><td><strong>Consentimiento explícito</strong> (art. 9.2.a RGPD, junto con el art. 6.1.a). Lo das marcando la casilla al crear la cuenta.</td></tr>
+      <tr><td>Buscar una dirección y calcular el camino a pie.</td><td>Texto de la dirección buscada; coordenadas de casa y destino</td><td><strong>Ejecución del servicio que pides</strong> (art. 6.1.b RGPD): solo se envía cuando tú pulsas «Buscar» o eliges un destino.</td></tr>
+      <tr><td>Proteger la cuenta y los datos (reglas de acceso, prevenir abusos y fallos).</td><td>Cuenta, técnicos</td><td><strong>Interés legítimo</strong> en la seguridad del servicio (art. 6.1.f RGPD).</td></tr>
+      <tr><td>Demostrar que se aceptó esta política.</td><td>Consentimiento</td><td><strong>Obligación legal</strong> de poder acreditar el consentimiento (art. 7.1 RGPD; art. 6.1.c).</td></tr>
+      <tr><td>Atender tus derechos y reclamaciones.</td><td>Los necesarios para cada caso</td><td><strong>Obligación legal</strong> (arts. 12 a 22 RGPD; art. 6.1.c).</td></tr>
+    </tbody>
+  </table></div>
+  <p>Memvia <strong>no</strong> usa tus datos para publicidad, perfiles comerciales, venta a terceros ni entrenamiento de sistemas de inteligencia artificial.</p>
+
+  <h2 id="salud">4. Datos de salud y consentimiento</h2>
+  <p>La medicación y las notas sobre salud son datos de <strong>categoría especial</strong> (art. 9 RGPD) y tienen una protección reforzada. Por eso:</p>
+  <ul>
+    <li>Al <strong>crear una cuenta</strong> te pedimos una casilla de consentimiento, aparte y sin marcar de antemano. Sin ella no se crea la cuenta.</li>
+    <li>Puedes <strong>retirar el consentimiento</strong> en cualquier momento, sin explicar por qué, con «Eliminar mi cuenta» en Ajustes o escribiendo al correo de la sección 1. Retirarlo no afecta a lo que se hizo antes de retirarlo.</li>
+    <li>También puedes <strong>no usar la sección de Medicación</strong>. El resto de Memvia funciona igual.</li>
+    <li>Los datos de salud <strong>no se usan para nada más</strong> que avisarte y mostrarte tu registro.</li>
+  </ul>
+
+  <h2 id="terceros-datos">5. Datos de familiares y de otras personas</h2>
+  <p>Memvia sirve para guardar datos de personas que no son quien lo usa: familiares, cuidadores o conocidos. Si los introduces tú, ten en cuenta:</p>
+  <ul>
+    <li><strong>Uso personal y doméstico.</strong> Cuando una persona guarda los datos de su propia familia para uso privado, el RGPD no se aplica a esa parte (art. 2.2.c). Aun así, te pedimos que solo anotes datos que esa persona sepa y no le molesten.</li>
+    <li><strong>Cuidadores que usan Memvia por otra persona.</strong> Si introduces datos de una persona con alzheimer u otra situación que afecte a su capacidad de decidir, debes hacerlo como <strong>cuidador o representante legal</strong> o con medidas de apoyo reconocidas (Ley 8/2021), y siempre pensando en su bien y respetando su voluntad y sus preferencias en la medida de lo posible.</li>
+    <li><strong>Fotos y teléfonos.</strong> Sube la foto o el teléfono de otra persona solo si esa persona (o quien la representa) lo sabe y está de acuerdo.</li>
+    <li>Si eres una de esas personas y no quieres que aparezca tu información, escribe al correo de la sección 1 y la retiraremos, o pídeselo a quien la introdujo.</li>
+  </ul>
+
+  <h2 id="destinatarios">6. Quién más recibe datos</h2>
+  <p>No vendemos ni cedemos tus datos. Para que la app funcione, estos servicios técnicos reciben lo mínimo necesario:</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Servicio</th><th>Para qué</th><th>Qué recibe</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Google Firebase</strong> (Authentication y Cloud Firestore)<br>Google Ireland Ltd. / Google LLC</td><td>Cuentas y base de datos donde se guardan tus datos. Actúa como <strong>encargado del tratamiento</strong> (art. 28 RGPD).</td><td>Todo lo de tu cuenta, incluidos los datos de salud que escribas. Región de la base de datos: <span class="ph">[[REGIÓN DE FIRESTORE, p. ej. «Europa (eur3)»]]</span>.</td></tr>
+      <tr><td><strong>GitHub Pages</strong><br>GitHub, Inc.</td><td>Alojar y servir la web de la app.</td><td>Tu dirección IP y datos técnicos del navegador, como en cualquier página web.</td></tr>
+      <tr><td><strong>OpenStreetMap</strong> (mapas)<br>OpenStreetMap Foundation</td><td>Imágenes del mapa (teselas).</td><td>Dirección IP y la zona del mapa que estás viendo.</td></tr>
+      <tr><td><strong>Nominatim</strong> (OpenStreetMap)</td><td>Convertir una dirección escrita en un punto del mapa.</td><td>El texto de la dirección que buscas y tu dirección IP. Solo al pulsar «Buscar».</td></tr>
+      <tr><td><strong>FOSSGIS e. V.</strong> (rutas a pie)</td><td>Calcular el camino andando.</td><td>Coordenadas de tu casa y del destino, y tu dirección IP. Solo al elegir un destino en el mapa.</td></tr>
+      <tr><td><strong>Google Fonts</strong></td><td>Tipos de letra de la app.</td><td>Dirección IP y datos del navegador.</td></tr>
+      <tr><td><strong>jsDelivr y unpkg</strong> (redes de distribución de contenido)</td><td>Cargar los iconos y el código del mapa (Tabler Icons, Leaflet).</td><td>Dirección IP y datos del navegador.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Estos proveedores tratan los datos técnicos según sus propias políticas de privacidad. Fuera de ellos, solo se comunican datos a <strong>autoridades</strong> cuando una ley lo obligue.</p>
+
+  <h2 id="transferencias">7. Transferencias fuera de la UE</h2>
+  <p>Algunos de estos proveedores tienen sede o servidores fuera del Espacio Económico Europeo, sobre todo en <strong>Estados Unidos</strong>. Esas transferencias se apoyan en las garantías del RGPD: decisiones de adecuación (como el Marco de Privacidad de Datos UE-EE. UU. para empresas adheridas) o cláusulas contractuales tipo de la Comisión Europea (arts. 44 a 49 RGPD). Puedes pedir información sobre estas garantías escribiendo al correo de la sección 1.</p>
+
+  <h2 id="plazos">8. Cuánto tiempo los conservamos</h2>
+  <ul>
+    <li><strong>Con cuenta:</strong> mientras la cuenta exista. Memvia <strong>no borra cuentas automáticamente</strong>: se eliminan cuando tú usas «Eliminar mi cuenta» o nos lo pides.</li>
+    <li><strong>Al eliminar la cuenta:</strong> se borran tu documento de datos y tu usuario. Los proveedores pueden conservar copias de seguridad técnicas durante un tiempo limitado antes de que desaparezcan por completo.</li>
+    <li><strong>Prueba de consentimiento:</strong> se borra junto con la cuenta.</li>
+    <li><strong>Copias que descargues (Exportar copia):</strong> son tuyas; se guardan donde tú decidas y son tu responsabilidad.</li>
+    <li><strong>Demostración:</strong> se queda en tu navegador hasta que lo borres.</li>
+  </ul>
+
+  <h2 id="derechos">9. Tus derechos</h2>
+  <p>Puedes ejercer, de forma gratuita, estos derechos (arts. 15 a 22 RGPD):</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Derecho</th><th>Qué significa</th><th>Cómo hacerlo en Memvia</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Acceso</strong></td><td>Saber qué datos tuyos hay.</td><td>Los ves en la propia app. Además, «Exportar copia» en Ajustes.</td></tr>
+      <tr><td><strong>Rectificación</strong></td><td>Corregir datos incorrectos.</td><td>Edita lo que quieras desde la app.</td></tr>
+      <tr><td><strong>Supresión</strong> («derecho al olvido»)</td><td>Que se borren tus datos.</td><td>«Eliminar mi cuenta» en Ajustes, o «Borrar todos los datos» para vaciarla.</td></tr>
+      <tr><td><strong>Portabilidad</strong></td><td>Llevarte tus datos en un formato legible.</td><td>«Exportar copia» (archivo JSON).</td></tr>
+      <tr><td><strong>Oposición y limitación</strong></td><td>Que dejemos de usar tus datos, o los congelemos, en ciertos casos.</td><td>Por correo, a la dirección de la sección 1.</td></tr>
+      <tr><td><strong>Retirar el consentimiento</strong></td><td>Dejar sin efecto el permiso que diste, en cualquier momento.</td><td>«Eliminar mi cuenta» o por correo.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Responderemos en <strong>un mes</strong> como máximo (art. 12.3 RGPD). Para atender una petición por correo podemos pedirte que confirmes quién eres. Si actúas en nombre de otra persona, indícalo y explica con qué título.</p>
+
+  <h2 id="seguridad">10. Seguridad</h2>
+  <ul>
+    <li>La comunicación con Memvia y con Firebase va cifrada (HTTPS).</li>
+    <li>Las reglas de Firestore hacen que cada persona <strong>solo pueda leer y escribir su propio documento</strong>. El resto de la base de datos está cerrada.</li>
+    <li>Las contraseñas las gestiona Firebase Authentication; Memvia no las guarda ni las ve.</li>
+    <li>Los datos <strong>no están cifrados de extremo a extremo</strong>: quien administra el proyecto de Firebase de Memvia y el propio proveedor podrían, técnicamente, acceder a ellos. Por eso están sujetos a las obligaciones de confidencialidad de esta política.</li>
+    <li>Si ocurriera una brecha de seguridad que suponga un riesgo para tus derechos, se avisará a la Agencia Española de Protección de Datos en 72 horas y, si el riesgo es alto, también a las personas afectadas (arts. 33 y 34 RGPD).</li>
+    <li>Tú también ayudas: usa una contraseña que no uses en otros sitios y no compartas tu sesión en aparatos de otras personas.</li>
+  </ul>
+
+  <h2 id="almacenamiento">11. Almacenamiento en tu dispositivo y cookies</h2>
+  <p>Memvia no usa cookies de publicidad, de estadísticas ni de seguimiento. Sí guarda en tu navegador (con tecnologías como <em>localStorage</em>, <em>IndexedDB</em> y la caché del <em>service worker</em>) lo imprescindible para funcionar:</p>
+  <ul>
+    <li>Mantener tu sesión iniciada (Firebase Authentication).</li>
+    <li>Recordar que ya viste la pantalla de bienvenida.</li>
+    <li>Guardar los datos de la demostración.</li>
+    <li>Guardar una copia de la app para que abra sin internet.</li>
+  </ul>
+  <p>Al ser <strong>estrictamente necesario</strong> para el servicio que pides, no requiere consentimiento (art. 22.2 LSSI). Puedes borrarlo desde los ajustes de tu navegador; eso cerrará tu sesión.</p>
+
+  <h2 id="menores">12. Menores de edad</h2>
+  <p>Memvia está pensada para personas mayores y sus cuidadores. Si eres menor de 14 años, necesitas el permiso de tu padre, madre o tutor para crear una cuenta (art. 7 LOPDGDD). Si eres mayor de 14 años pero menor de edad, y los datos que vas a guardar son de salud de otra persona, pide ayuda a un adulto de confianza.</p>
+
+  <h2 id="automatizadas">13. Decisiones automáticas</h2>
+  <p>Memvia no toma decisiones automatizadas ni elabora perfiles con efectos sobre ti (art. 22 RGPD). Los avisos de medicación y de tareas se disparan solo por la hora que tú escribiste.</p>
+
+  <h2 id="demo">14. Modo demostración</h2>
+  <p>En la demostración no hay cuenta, y los datos de ejemplo y los cambios que hagas <strong>se quedan solo en tu navegador</strong>. Si buscas una dirección o pides una ruta, se usan los servicios de mapas de la sección 6. Para usar tus datos reales de forma duradera, crea una cuenta.</p>
+
+  <h2 id="reclamacion">15. Reclamaciones</h2>
+  <p>Si crees que se han tratado mal tus datos, escríbenos primero para intentar resolverlo. También puedes reclamar ante la <strong>Agencia Española de Protección de Datos (AEPD)</strong>: <a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>, C/ Jorge Juan 6, 28001 Madrid.</p>
+
+  <h2 id="legal">16. Aviso legal y límites del servicio</h2>
+  <ul>
+    <li><strong>Titular de la web</strong> (art. 10 LSSI): <span class="ph">[[NOMBRE Y APELLIDOS, O ENTIDAD]]</span>, contacto: <span class="ph">[[CORREO ELECTRÓNICO DE CONTACTO]]</span>. Servicio gratuito y sin ánimo de lucro.</li>
+    <li><strong>Memvia no es un producto sanitario</strong>, no diagnostica ni trata ninguna enfermedad y no sustituye el consejo de un médico ni de un cuidador. Sigue siempre las indicaciones de tu médico para la medicación.</li>
+    <li><strong>No es un sistema de seguridad ni de emergencias.</strong> El botón SOS solo intenta llamar a un familiar con la aplicación de teléfono del aparato. En una emergencia, llama al <strong>112</strong>.</li>
+    <li>Los <strong>avisos con voz</strong> de tareas y medicación solo suenan con la app abierta en el aparato. No dependas de ellos como único recordatorio.</li>
+    <li>Los <strong>caminos a pie</strong> son orientativos, vienen de datos abiertos y pueden contener errores. Comprueba que es seguro antes de seguir una ruta.</li>
+    <li>La app se ofrece «tal cual», sin garantía de disponibilidad continua. Se hará lo posible por mantenerla, pero puede tener fallos o dejar de estar disponible.</li>
+    <li><strong>Créditos y licencias:</strong> datos de mapa © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (licencia ODbL); <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>; <a href="https://tabler.io/icons" target="_blank" rel="noopener">Tabler Icons</a>; tipos de letra Fraunces y Nunito (Google Fonts).</li>
+    <li><strong>Ley aplicable:</strong> legislación española y europea.</li>
+  </ul>
+
+  <h2 id="cambios">17. Cambios en esta política</h2>
+  <p>Si esta política cambia de forma importante (por ejemplo, un nuevo uso de los datos o un nuevo proveedor), se actualizará la versión y la fecha de arriba y, si hace falta tu consentimiento de nuevo, se te pedirá. Versión actual: <strong>2026-10-09</strong>.</p>
+
+  <footer>
+    <a href="./">← Volver a Memvia</a>
+  </footer>
+</main>
+<script>
+  if (document.querySelector('.ph')) document.getElementById('ph-banner').style.display = 'block';
+</script>
+</body>
+</html>

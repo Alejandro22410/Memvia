@@ -59,13 +59,19 @@ Pulsa **Probar sin cuenta (demostración)** para verla funcionando.
 | `js/config.js` | Configuración de Firebase |
 | `sw.js`, `manifest.webmanifest` | Instalación y modo sin conexión |
 | `firestore.rules` | Reglas de seguridad de la base de datos |
+| `privacidad.html` | Política de privacidad, bases legales y aviso legal |
 
-## Privacidad
+## Privacidad y legal
 
-- Con cuenta, los datos (nombres, fotos, direcciones, medicación) se guardan en Firebase, en un documento por usuario protegido por las reglas.
-- En modo demostración, nada sale del dispositivo.
-- Para buscar una dirección, el texto se envía a Nominatim (OpenStreetMap). Para calcular una ruta, las coordenadas de la casa y del familiar se envían a FOSSGIS. Nada más.
-- Usa datos inventados o permiso de la familia en las demos públicas.
+- La app incluye `privacidad.html`: política de privacidad, bases legales (RGPD y LOPDGDD), derechos, destinatarios, cookies y aviso legal.
+- **Antes de publicar, completa los datos entre `[[corchetes]]`** (responsable, correo de contacto y región de Firestore). Mientras falte alguno, la página muestra un aviso amarillo.
+- Al crear una cuenta hay una casilla de **consentimiento explícito** para datos de salud (medicación). Se guarda con la versión de la política y la fecha. Si una cuenta antigua no lo tiene, la app lo pide al entrar.
+- En Ajustes hay **Exportar copia** (portabilidad) y **Eliminar mi cuenta** (borra los datos y el usuario).
+- Sin cuenta (demostración) nada sale del dispositivo, salvo búsquedas de dirección y rutas.
+- Con cuenta, los datos están en Firebase (Google), sin cifrado de extremo a extremo. Las reglas de `firestore.rules` limitan cada documento a su dueño.
+- Para el mapa se envían a terceros la IP y, al pulsar Buscar o elegir ruta, la dirección o las coordenadas (Nominatim, FOSSGIS). El resto de servicios están en la sección 6 de la política.
+- Usa datos inventados, o permiso de la familia, en demos públicas.
+- Si la app llega a muchas personas (datos de salud de personas vulnerables a gran escala), hace falta además una evaluación de impacto (art. 35 RGPD) y un registro de actividades de tratamiento. Consulta con un asesor jurídico o con el delegado de protección de datos de tu centro.
 
 ## Límites
 

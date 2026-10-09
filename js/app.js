@@ -50,6 +50,9 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
   let userName = '';
   let simpleMode = false;
   let theme = 'auto';
+  let consent = null;            // { version, at }: prueba del consentimiento para datos de salud
+  let pendingConsent = null;     // se rellena al crear cuenta y se guarda con el primer documento
+  const CONSENT_VERSION = '2026-10-09';
   let quizScore = { correct: 0, total: 0 };
   let selectedIcon = '';
 
@@ -573,11 +576,12 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
   let timersStarted = false;
   const MAX_DOC_CHARS = 900000; // Firestore guarda hasta ~1 MB por documento
 
-  function buildState() { return { family, home, fsScale, reminders, meds, places, memories, userName, simpleMode, theme }; }
+  function buildState() { return { family, home, fsScale, reminders, meds, places, memories, userName, simpleMode, theme, consent: consent || null }; }
   function applyState(s) {
     family = s.family || []; home = s.home || null; fsScale = s.fsScale || 1;
     reminders = s.reminders || []; meds = s.meds || []; places = s.places || [];
     memories = s.memories || []; userName = s.userName || ''; simpleMode = !!s.simpleMode; theme = s.theme || 'auto';
+    consent = s.consent && typeof s.consent.version === 'string' && typeof s.consent.at === 'string' ? { version: s.consent.version, at: s.consent.at } : null;
   }
   function scheduleSave() {
     if (!currentUser) return;
@@ -623,11 +627,68 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays();
   }
 
+  let consentPrompting = false;
+  async function askConsent() {
+    if (consentPrompting || demoMode || !auth) return;
+    consentPrompting = true;
+    const ok = await confirmDialog('Memvia guarda datos de salud, como tu medicación. Para seguir usando tu cuenta necesitamos tu consentimiento explícito (lo explica la Política de privacidad, en Ajustes). Puedes retirarlo cuando quieras. Si no aceptas, se cerrará la sesión y no se borrará nada.', 'Sí, acepto');
+    consentPrompting = false;
+    if (ok) { consent = { version: CONSENT_VERSION, at: new Date().toISOString() }; scheduleSave(); }
+    else if (auth) auth.signOut();
+  }
+
+  function resetLocalState() {
+    family = []; home = null; reminders = []; meds = []; places = []; memories = []; userName = ''; simpleMode = false; theme = 'auto'; fsScale = 1; consent = null;
+    clearSelection(true); routeCache.clear();
+    applyTextSize(); applySimpleMode(); applyTheme();
+    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard();
+  }
+
+  async function deleteAccount() {
+    const msg = demoMode
+      ? '¿Borrar los datos de la demostración de este dispositivo?'
+      : '¿Eliminar tu cuenta de Memvia? Se borrarán tu cuenta y todos tus datos (familia, medicación, recuerdos...). No se puede deshacer.';
+    if (!(await confirmDialog(msg, demoMode ? 'Sí, borrar' : 'Sí, eliminar mi cuenta'))) return;
+    document.getElementById('settings-modal').style.display = 'none';
+    if (demoMode) {
+      try { localStorage.removeItem(DEMO_KEY); } catch (e) { /* ignorar */ }
+      resetLocalState(); leaveDemo();
+      return;
+    }
+    const user = auth && auth.currentUser;
+    if (!user || !db) { showSaveError('No se pudo conectar con el servicio de cuentas. Inténtalo de nuevo con internet.'); return; }
+    try {
+      stopListening();
+      await db.collection('memvia_users').doc(user.uid).delete();
+    } catch (err) {
+      console.error('Error borrando los datos:', err);
+      startListening(user.uid);
+      showSaveError('No se pudieron borrar los datos. Comprueba la conexión e inténtalo de nuevo.');
+      return;
+    }
+    try {
+      await user.delete();
+    } catch (err) {
+      resetLocalState();
+      if (err && err.code === 'auth/requires-recent-login') {
+        showSaveError('Tus datos se han borrado. Para eliminar también tu usuario, cierra sesión, vuelve a entrar y repite «Eliminar mi cuenta».');
+        if (auth) auth.signOut();
+      } else {
+        showSaveError('Tus datos se han borrado, pero no se pudo eliminar el usuario. Escribe al correo de privacidad.');
+      }
+      return;
+    }
+    resetLocalState();
+  }
+  document.getElementById('delete-account-btn').onclick = deleteAccount;
+
   function startListening(uid) {
     if (unsubscribeSnapshot) unsubscribeSnapshot();
     unsubscribeSnapshot = db.collection('memvia_users').doc(uid).onSnapshot(doc => {
-      if (doc.exists) applyState(doc.data());
+      if (doc.exists) applyState(doc.data()); else consent = null;
+      if (!consent && pendingConsent) { consent = pendingConsent; pendingConsent = null; scheduleSave(); }
       renderAll();
+      if (!consent) askConsent();
     }, () => { document.getElementById('loading').style.display = 'none'; });
   }
 
@@ -660,6 +721,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       } else {
         currentUser = null;
         stopListening();
+        resetLocalState();   // que los datos de una persona no queden en memoria al entrar otra
         showGate();
       }
     });
@@ -694,7 +756,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
   function leaveDemo() {
     demoMode = false;
     currentUser = null;
-    clearSelection(true);
+    resetLocalState();
     showGate();
   }
   document.getElementById('auth-demo-btn').onclick = enterDemo;
@@ -722,7 +784,14 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     const errorEl = document.getElementById('auth-error');
     errorEl.style.display = 'none';
     if (!email || pass.length < 6) { errorEl.textContent = 'Escribe un email y una contraseña de al menos 6 caracteres.'; errorEl.style.display = 'block'; return; }
+    if (!document.getElementById('auth-consent').checked) {
+      errorEl.textContent = 'Para crear la cuenta marca la casilla de consentimiento. Sin ella no se pueden guardar datos de salud.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    pendingConsent = { version: CONSENT_VERSION, at: new Date().toISOString() };
     auth.createUserWithEmailAndPassword(email, pass).catch(err => {
+      pendingConsent = null;
       errorEl.textContent = 'No se pudo crear la cuenta: ' + (err.message || '');
       errorEl.style.display = 'block';
     });
@@ -979,7 +1048,9 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       try { data = JSON.parse(reader.result); } catch (err) { data = null; }
       if (!data || typeof data !== 'object' || Array.isArray(data)) { showSaveError('Ese archivo no es una copia de Memvia.'); return; }
       if (!(await confirmDialog('Esto reemplaza todos los datos actuales por los de la copia.', 'Sí, reemplazar'))) return;
+      const keepConsent = consent;
       applyState(data);
+      consent = keepConsent;   // el consentimiento no viaja en las copias: solo lo da la propia persona
       clearSelection(true); routeCache.clear();
       renderAll(); scheduleSave();
       document.getElementById('settings-modal').style.display = 'none';
