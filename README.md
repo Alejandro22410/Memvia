@@ -135,3 +135,5 @@ Pulsa **Probar sin cuenta (demostración)** para ver una demostración.
 - Los pasos de la ruta se traducen al español con reglas sencillas; algunas calles pueden sonar raras.
 - El mapa, las búsquedas y las rutas necesitan internet.
 
+ ![imagen](https://github.com/Alejandro22410/Memvia/blob/main/icons/icon192.png)
+
