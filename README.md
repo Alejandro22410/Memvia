@@ -1,11 +1,10 @@
 
-
+### Proyecto para **Coolest Projects**.
 ### Alejandro Narvaez Jaime | Codelearn Gava
 # Memvia · Tu gente, siempre cerca
 
-Memvia es una app para personas con alzheimer. Muestra a la familia con su cara y su nombre, dice quién es cada persona y **dónde vive**, en un mapa real, con el camino a pie desde casa. También ayuda con la medicación, las tareas del día y los recuerdos.
+Memvia es una app para ayudar a las personas con alzheimer. Muestra a la familia con su cara y su nombre, dice quién es cada persona y **dónde vive**, en un mapa real, con el camino a pie desde casa. También ayuda con la medicación, las tareas del día y los recuerdos.
 
-Proyecto para **Coolest Projects**.
 
 ## Qué hace
 
@@ -77,8 +76,6 @@ flowchart LR
 
 ## Probarla
 
-Online (GitHub Pages): activa Pages en el repositorio (Settings → Pages → rama `main`, carpeta `/ (root)`). La dirección será `https://TU-USUARIO.github.io/NOMBRE-DEL-REPO/`.
-
 En tu ordenador, con cualquier servidor estático:
 
 ```bash
@@ -87,7 +84,7 @@ python3 -m http.server 8080      # o: npx serve
 
 y abre http://localhost:8080. No hay paso de compilación.
 
-Pulsa **Probar sin cuenta (demostración)** para verla funcionando.
+Pulsa **Probar sin cuenta (demostración)** para ver una demostración.
 
 ### Instalarla como app
 
@@ -138,6 +135,3 @@ Pulsa **Probar sin cuenta (demostración)** para verla funcionando.
 - Los pasos de la ruta se traducen al español con reglas sencillas; algunas calles pueden sonar raras.
 - El mapa, las búsquedas y las rutas necesitan internet.
 
-## Créditos
-
-[OpenStreetMap](https://www.openstreetmap.org/copyright) · [Nominatim](https://nominatim.org) · [FOSSGIS OSRM](https://routing.openstreetmap.de) · [Leaflet](https://leafletjs.com) · [Firebase](https://firebase.google.com) · [Tabler Icons](https://tabler.io/icons) · Fuentes Fraunces y Nunito (Google Fonts).
