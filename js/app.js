@@ -595,16 +595,24 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     if (size > MAX_DOC_CHARS) { showSaveError('Hay demasiadas fotos y no caben. Quita alguna foto para poder guardar.'); return; }
     db.collection('memvia_users').doc(currentUser.uid).set(state).catch(function(err) {
       console.error('Error guardando en Firestore:', err);
-      showSaveError();
+      const code = err && err.code ? ' (' + err.code + ')' : '';
+      showSaveError('No se pudo guardar' + code + '. ' + firestoreHelp(err), 20000);
     });
   }
   let saveErrorTimer = null;
-  function showSaveError(message) {
+  function firestoreHelp(err) {
+    const c = err && err.code;
+    if (c === 'permission-denied') return 'Firestore rechaza el acceso: publica las reglas de firestore.rules en Firebase.';
+    if (c === 'unavailable') return 'No hay conexión con Firebase. Revisa internet.';
+    if (c === 'failed-precondition' || c === 'not-found') return 'Falta crear la base de datos en Firebase (Firestore Database → Crear base de datos).';
+    return 'Revisa tu conexión y la configuración de Firestore.';
+  }
+  function showSaveError(message, ms) {
     const box = document.getElementById('save-error');
     clearTimeout(saveErrorTimer);
     box.textContent = '⚠️ ' + (message || 'No se pudo guardar. Revisa tu conexión o los permisos de Firestore.');
     box.style.display = 'block';
-    saveErrorTimer = setTimeout(() => { box.style.display = 'none'; }, 6000);
+    saveErrorTimer = setTimeout(() => { box.style.display = 'none'; }, ms || 6000);
   }
   async function saveFamily() { scheduleSave(); }
   async function saveHome() { scheduleSave(); }
@@ -689,7 +697,12 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       if (!consent && pendingConsent) { consent = pendingConsent; pendingConsent = null; scheduleSave(); }
       renderAll();
       if (!consent) askConsent();
-    }, () => { document.getElementById('loading').style.display = 'none'; });
+    }, err => {
+      document.getElementById('loading').style.display = 'none';
+      console.error('Error leyendo de Firestore:', err);
+      const code = err && err.code ? ' (' + err.code + ')' : '';
+      showSaveError('No se pueden leer tus datos' + code + '. ' + firestoreHelp(err), 20000);
+    });
   }
 
   function stopListening() { if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; } }
