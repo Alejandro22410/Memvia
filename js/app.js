@@ -568,7 +568,12 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
   const firebaseLoaded = typeof firebase !== 'undefined';
   const firebaseConfigured = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== 'TU_API_KEY';
   if (firebaseLoaded && firebaseConfigured) {
-    try { firebase.initializeApp(firebaseConfig); auth = firebase.auth(); db = firebase.firestore(); } catch (e) { auth = null; db = null; }
+    try {
+      firebase.initializeApp(firebaseConfig); auth = firebase.auth(); db = firebase.firestore();
+      // Redes de colegios, antivirus y proxies suelen bloquear la conexión normal de Firestore.
+      // Con esto, si falla, la app prueba otra forma de conectar (long polling) por su cuenta.
+      try { db.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e2) { /* ya iniciado */ }
+    } catch (e) { auth = null; db = null; }
   }
   let currentUser = null;
   let demoMode = false;
@@ -593,13 +598,24 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     let size = 0;
     try { size = JSON.stringify(state).length; } catch (e) { /* ignorar */ }
     if (size > MAX_DOC_CHARS) { showSaveError('Hay demasiadas fotos y no caben. Quita alguna foto para poder guardar.'); return; }
-    db.collection('memvia_users').doc(currentUser.uid).set(state).catch(function(err) {
+    // Si Firestore no consigue hablar con el servidor, set() no falla: se queda esperando en silencio.
+    // Este aviso salta si pasan 10 segundos sin confirmación del servidor.
+    const slowTimer = setTimeout(function() {
+      slowSaveShown = true;
+      showSaveError('Tus cambios están en este aparato pero aún no llegan a Firebase. Puede que la red (colegio, wifi público, antivirus) bloquee la conexión. Prueba con otra red o con los datos del móvil.', 25000);
+    }, 10000);
+    db.collection('memvia_users').doc(currentUser.uid).set(state).then(function() {
+      clearTimeout(slowTimer);
+      if (slowSaveShown) { slowSaveShown = false; const box = document.getElementById('save-error'); if (box) box.style.display = 'none'; }
+    }).catch(function(err) {
+      clearTimeout(slowTimer);
       console.error('Error guardando en Firestore:', err);
       const code = err && err.code ? ' (' + err.code + ')' : '';
       showSaveError('No se pudo guardar' + code + '. ' + firestoreHelp(err), 20000);
     });
   }
   let saveErrorTimer = null;
+  let slowSaveShown = false;
   function firestoreHelp(err) {
     const c = err && err.code;
     if (c === 'permission-denied') return 'Firestore rechaza el acceso: publica las reglas de firestore.rules en Firebase.';
