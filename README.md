@@ -12,8 +12,8 @@ Memvia es una app para ayudar a las personas con alzheimer. Muestra a la familia
 
 - **Familia**: foto (o icono), nombre, parentesco y una frase especial. Un toque y la app lo lee en voz alta. Llamada y WhatsApp con un botón.
 - **Mapa real** (OpenStreetMap): casa de cada familiar y lugares importantes (farmacia, centro de salud...). Al tocar uno se ve cuánto se tarda **andando** y los pasos del camino, escritos en español. También hay un **esquema** sencillo de distancias que funciona sin internet.
-- **Mi día**: recordatorios con hora y aviso.
-- **Medicación**: horarios y registro de tomas.
+- **Mi día**: recordatorios con hora, con aviso de voz y notificación del aparato. Si un aviso pasa sin marcarse, aparece en «Se te ha pasado hoy».
+- **Medicación**: horarios y registro de tomas. En Ajustes, «Llevar los avisos a mi calendario» crea un archivo `.ics` (alarma diaria) para que el móvil avise aunque Memvia esté cerrada.
 - **Recuerdos**: pequeñas historias de la familia.
 - **Juego**: "¿Quién es?", para ejercitar la memoria con las caras de la familia.
 - **SOS**: llama a un familiar.
@@ -110,6 +110,7 @@ Pulsa **Probar sin cuenta (demostración)** para ver una demostración.
 | `js/app.js` | Lógica: familia, mapa, rutas, medicación, cuentas, modo demo |
 | `js/mapa.js` | Mapa Leaflet y marcadores |
 | `js/buscador.js` | Buscador de direcciones (elige tú el resultado correcto) |
+| `js/avisos.js` | Qué aviso toca ahora, cuáles se perdieron y exportación `.ics` |
 | `js/geo.js` | Direcciones (Nominatim) y rutas a pie (OSRM), con ruta aproximada si falla |
 | `js/demo.js` | Datos de ejemplo inventados |
 | `js/config.js` | Configuración de Firebase |
@@ -138,3 +139,9 @@ Pulsa **Probar sin cuenta (demostración)** para ver una demostración.
 - El mapa, las búsquedas y las rutas necesitan internet.
 
  
+
+
+## Avisos y accesibilidad
+
+- **Avisos**: suenan con voz y, si se activan en Ajustes, con notificación del aparato (`js/avisos.js` + `sw.js`). Funcionan con la app abierta o en segundo plano. Con la app cerrada del todo, un navegador no puede avisar sin un servidor (haría falta Firebase Cloud Messaging con Cloud Functions, que exige el plan Blaze); por eso existe la exportación al calendario.
+- **Accesibilidad (WCAG 2.1 AA)**: campos con etiqueta, pestañas con roles y flechas, ventanas con foco y Escape, fichas abrirse con teclado, contraste ≥ 4,5:1, zonas táctiles ≥ 44 px, sin scroll horizontal a 320 px. Está revisada con comprobaciones automáticas propias, **no** con lectores de pantalla reales (VoiceOver, TalkBack, NVDA): pruébala con uno antes de presentarla.

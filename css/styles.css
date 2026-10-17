@@ -392,3 +392,74 @@ dialog.confirm-dlg::backdrop { background: rgba(20, 10, 60, .55); }
 @media (prefers-color-scheme: dark) {
   #app[data-theme="auto"] .quick-card.sos { background:#D63E2F; border-color:transparent; }
 }
+
+/* ---- Avisos perdidos y ajustes de avisos ---- */
+.missed-box { background: var(--bg-warning, #FFF3D6); color: var(--text-primary); border: 2px solid #B45309; border-radius: 18px; padding: 12px 14px; margin-bottom: 12px; }
+.missed-box[hidden] { display: none; }
+.missed-box h2 { margin: 0 0 8px; font-size: calc(17px * var(--fs-scale)); font-family: var(--font-display); }
+.missed-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.missed-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: calc(15px * var(--fs-scale)); font-weight: 700; }
+.missed-ok { min-height: 44px; padding: 0 16px; border-radius: 999px; border: none; background: #B45309; color: #fff; font-weight: 800; font-size: calc(14px * var(--fs-scale)); cursor: pointer; }
+.notif-box { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.notif-box h4 { margin: 0 0 6px; font-size: 16px; }
+#app[data-theme="dark"] .missed-box { background: #3A2A0A; border-color: #F59E0B; }
+#app[data-theme="dark"] .missed-ok { background: #F59E0B; color: #1A1200; }
+@media (prefers-color-scheme: dark) {
+  #app[data-theme="auto"] .missed-box { background: #3A2A0A; border-color: #F59E0B; }
+  #app[data-theme="auto"] .missed-ok { background: #F59E0B; color: #1A1200; }
+}
+
+/* =====================================================================
+   Accesibilidad (WCAG 2.1 AA): contraste, tamaños táctiles y foco
+   ===================================================================== */
+.skip-link { position: fixed; left: 12px; top: -60px; z-index: 300; background: #2B2550; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 800; text-decoration: none; }
+.skip-link:focus { top: 12px; }
+
+/* Texto atenuado más oscuro (antes 4,3:1; ahora más de 5:1) */
+#app[data-theme="light"], #app[data-theme="auto"] { --text-muted: #655F82; --text-danger: #B02A2A; }
+@media (prefers-color-scheme: dark) {
+  #app[data-theme="auto"] { --text-muted: #AEA7D2; --text-danger: #FCA5A5; }
+}
+#app[data-theme="dark"] { --text-muted: #AEA7D2; --text-danger: #FCA5A5; }
+.hint-text { font-size: calc(13px * var(--fs-scale, 1)); }
+.med-history, .fam-unplaced, .fam-address { font-size: calc(13px * var(--fs-scale, 1)); }
+.data-status { font-size: calc(13px * var(--fs-scale, 1)); }
+
+/* Cabecera: botones y subtítulo legibles sobre el degradado */
+.app-header { background: radial-gradient(120% 140% at 100% 0%, #7A58E8 0%, transparent 55%), linear-gradient(135deg, #3F25B5, #5A3DD0); }
+.brand-tagline { opacity: 1; color: #fff; }
+.header-btn { min-width: 44px; height: 44px; background: rgba(20, 10, 80, .35); }
+.header-btn:hover { background: rgba(20, 10, 80, .5); }
+.quick-card.sos { background: #C5301F; }
+#app[data-theme="dark"] .quick-card.sos { background: #C5301F; }
+@media (prefers-color-scheme: dark) { #app[data-theme="auto"] .quick-card.sos { background: #C5301F; } }
+.quick-card.sos small { color: #fff; }
+.primary-btn, .tab-btn.active { color: #fff; }
+
+/* Zonas táctiles de al menos 44 × 44 píxeles */
+.reminder-check { width: 44px; height: 44px; }
+.reminder-delete { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.fam-star { width: 44px; height: 44px; top: 4px; right: 4px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.fam-move { top: 4px; left: 4px; gap: 0; }
+.fam-move button { width: 44px; height: 44px; font-size: 16px; background: transparent; }
+.fam-actions a, .fam-actions button { min-height: 44px; min-width: 44px; justify-content: center; }
+.icon-chip { width: 44px; height: 44px; }
+.profile-close { width: 44px; height: 44px; }
+.tab-btn { font-size: 11px; }
+select { min-height: 46px; }
+input[type="checkbox"] { width: 24px; height: 24px; }
+.fam-name .fam-open { all: unset; cursor: pointer; font: inherit; color: inherit; text-align: center; border-radius: 10px; padding: 4px 8px; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
+.fam-name .fam-open:hover { text-decoration: underline; }
+.addr-result { min-height: 44px; }
+.map-toggle button, .route-actions a, .route-actions button { min-height: 44px; }
+
+/* Foco visible en todo: también en la bienvenida, el acceso y los enlaces */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 3px solid #5B3FD0; outline-offset: 2px; }
+#app[data-theme="dark"] :focus-visible { outline-color: #C9BBFF; }
+@media (prefers-color-scheme: dark) { #app[data-theme="auto"] :focus-visible { outline-color: #C9BBFF; } }
+.header-btn:focus-visible, .quick-card.sos:focus-visible, .tab-btn.active:focus-visible { outline-color: #fff; box-shadow: 0 0 0 5px #2B2550; }
+.auth-demo { color: #43289F; }
+.reminder-check { border-color: #7A7399; }
+@media (forced-colors: active) { .tab-btn.active, .map-toggle button.active { outline: 2px solid Highlight; } }
+.eyebrow { color: var(--text-accent); }
+.skip-link { padding: 13px 18px; min-height: 44px; box-sizing: border-box; }

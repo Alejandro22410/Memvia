@@ -2,13 +2,24 @@
 // - Archivos de la propia app: primero red, y si no hay internet, copia guardada.
 // - Librerías externas (Leaflet, iconos, letras): primero copia guardada.
 // - Firebase, mapas, buscador de direcciones y rutas: no se tocan (siempre en directo).
-const VERSION = 'memvia-v6';
+const VERSION = 'memvia-v7';
 const SHELL = [
   './', 'index.html', 'privacidad.html', 'manifest.webmanifest',
   'css/styles.css',
-  'js/app.js', 'js/config.js', 'js/demo.js', 'js/buscador.js', 'js/mapa.js', 'js/geo.js',
+  'js/app.js', 'js/avisos.js', 'js/config.js', 'js/demo.js', 'js/buscador.js', 'js/mapa.js', 'js/geo.js',
   'icons/icon192.png', 'icons/icon512.png', 'icons/icon-maskable-512.png'
 ];
+// Al tocar un aviso del aparato, se abre Memvia (o se vuelve a ella si ya estaba abierta).
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      for (const w of wins) { if ('focus' in w) return w.focus(); }
+      return self.clients.openWindow('./');
+    })
+  );
+});
+
 const CDN = ['unpkg.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com', 'www.gstatic.com'];
 
 self.addEventListener('install', (e) => {

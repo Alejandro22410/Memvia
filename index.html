@@ -21,22 +21,23 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<div id="welcome-screen" style="position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(135deg,#4B2FC0,#8B6CF2); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<a class="skip-link" href="#tabs">Saltar a las secciones</a>
+<div id="welcome-screen" role="dialog" aria-modal="true" aria-labelledby="welcome-title-h" style="position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(135deg,#4B2FC0,#8B6CF2); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="width:100%; max-width:420px; background:#fff; border-radius:28px; padding:2.2rem 1.8rem; box-shadow:0 20px 50px rgba(50,30,20,.25); text-align:center; animation: welcomePop .5s cubic-bezier(.2,.9,.25,1.1);">
     <div style="width:84px; height:84px; margin:0 auto 1.1rem; border-radius:22px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(50,30,20,.18);">
       <img id="welcome-logo-img" src="icons/icon192.png" alt="Memvia" style="width:100%; height:100%; object-fit:cover;">
     </div>
-    <h1 style="margin:0 0 6px; font-size:28px; color:#2A211C;">Memvia</h1>
-    <p style="margin:0 0 20px; color:#7A6C61; font-size:15px; line-height:1.45;">Tu gente, siempre cerca. Una app pensada para ayudar a personas con alzheimer a reconocer a su familia, saber dónde están y recordar su día.</p>
+    <h1 id="welcome-title-h" style="margin:0 0 6px; font-size:28px; color:#2A211C;">Memvia</h1>
+    <p style="margin:0 0 20px; color:#5E587A; font-size:15px; line-height:1.45;">Tu gente, siempre cerca. Una app pensada para ayudar a personas con alzheimer a reconocer a su familia, saber dónde están y recordar su día.</p>
     <div style="display:flex; flex-direction:column; gap:10px; text-align:left; margin-bottom:22px;">
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#4A3B32;"><i class="ti ti-users" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Caras y nombres de tu familia, siempre a mano</div>
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#4A3B32;"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Un mapa sencillo con casa y lugares importantes</div>
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#4A3B32;"><i class="ti ti-pill" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Medicación, tareas del día y recuerdos</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:15px; color:#4A3B32;"><i class="ti ti-users" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Caras y nombres de tu familia, siempre a mano</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:15px; color:#4A3B32;"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Un mapa sencillo con casa y lugares importantes</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:15px; color:#4A3B32;"><i class="ti ti-pill" aria-hidden="true" style="font-size:20px; color:#5B3FD0;"></i> Medicación, tareas del día y recuerdos</div>
     </div>
     <button id="welcome-continue-btn" style="width:100%; height:52px; border:none; border-radius:999px; background:linear-gradient(135deg,#5B3FD0,#8B6CF2); color:#fff; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 8px 20px rgba(91,63,208,.35);">Continuar</button>
-    <p style="margin:14px 0 0; font-size:12px; color:#7A6C61;">Al continuar aceptas que lo uses con estos <a href="privacidad.html" target="_blank" rel="noopener" style="color:#4A2FB8; font-weight:700;">avisos de privacidad</a>. No se guardan datos de salud sin tu permiso.</p>
-    <label style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; font-size:12px; color:#A79A8E; cursor:pointer;">
-      <input type="checkbox" id="welcome-skip-check" style="width:14px; height:14px;"> No volver a mostrar esta pantalla
+    <p style="margin:14px 0 0; font-size:13px; color:#5E587A;">Al continuar aceptas que lo uses con estos <a href="privacidad.html" target="_blank" rel="noopener" style="color:#4A2FB8; font-weight:700;">avisos de privacidad</a>. No se guardan datos de salud sin tu permiso.</p>
+    <label style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; font-size:14px; color:#5E587A; cursor:pointer; min-height:44px;">
+      <input type="checkbox" id="welcome-skip-check" style="width:24px; height:24px;"> No volver a mostrar esta pantalla
     </label>
   </div>
 </div>
@@ -56,14 +57,14 @@
   <form id="auth-form" style="width:100%; max-width:360px; background:#fff; border-radius:22px; padding:2rem; box-shadow:0 8px 24px rgba(0,0,0,.08); display:flex; flex-direction:column; gap:12px;">
     <h2 style="margin:0 0 4px; text-align:center;">Memvia</h2>
     <p style="margin:0 0 8px; text-align:center; color:#666; font-size:14px;">Entra o crea tu cuenta</p>
-    <input id="auth-email" type="email" placeholder="Tu email" required style="height:46px; font-size:16px; padding:0 14px; border-radius:12px; border:1px solid #ddd;" />
-    <input id="auth-password" type="password" placeholder="Contraseña (mínimo 6 caracteres)" required style="height:46px; font-size:16px; padding:0 14px; border-radius:12px; border:1px solid #ddd;" />
-    <label id="auth-consent-label" style="display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.45; color:#4A3B32; cursor:pointer;">
-      <input type="checkbox" id="auth-consent" style="width:20px; height:20px; flex:none; margin-top:1px;">
+    <input id="auth-email" type="email" aria-label="Correo electrónico" autocomplete="email" placeholder="Tu email" required style="height:46px; font-size:16px; padding:0 14px; border-radius:12px; border:1px solid #ddd;" />
+    <input id="auth-password" type="password" aria-label="Contraseña" autocomplete="current-password" placeholder="Contraseña (mínimo 6 caracteres)" required style="height:46px; font-size:16px; padding:0 14px; border-radius:12px; border:1px solid #ddd;" />
+    <label id="auth-consent-label" style="display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.45; color:#4A3B32; cursor:pointer;">
+      <input type="checkbox" id="auth-consent" style="width:24px; height:24px; flex:none; margin-top:1px;">
       <span>Solo para <strong>crear una cuenta</strong>: he leído la <a href="privacidad.html" target="_blank" rel="noopener" style="color:#4A2FB8; font-weight:700;">Política de privacidad</a> y <strong>doy mi consentimiento explícito</strong> para que Memvia guarde los datos de salud (como la medicación) que yo escriba. Puedo retirarlo cuando quiera.</span>
     </label>
-    <p id="auth-error" style="display:none; color:#c23b3b; font-size:13px; margin:0;"></p>
-    <button type="submit" style="height:48px; border:none; border-radius:999px; background:linear-gradient(135deg,#7C5CFF,#FF7A8A); color:#fff; font-weight:600; font-size:16px; cursor:pointer;">Entrar</button>
+    <p id="auth-error" role="alert" style="display:none; color:#B02A2A; font-size:14px; margin:0;"></p>
+    <button type="submit" style="height:48px; border:none; border-radius:999px; background:#5B3FD0; color:#fff; font-weight:700; font-size:16px; cursor:pointer;">Entrar</button>
     <button type="button" id="auth-signup-btn" style="height:48px; border:1px solid #ddd; border-radius:999px; background:#fff; font-weight:600; font-size:15px; cursor:pointer;">Crear cuenta nueva</button>
     <button type="button" id="auth-demo-btn" class="auth-demo">Probar sin cuenta (demostración)</button>
     <p id="auth-note" class="auth-note" style="display:none;"></p>
@@ -71,13 +72,13 @@
   </form>
 </div>
 
-<div id="app" data-theme="auto" style="max-width: 780px; margin: 0 auto; --fs-scale: 1; display:none;">
-  <div class="app-header">
+<div id="app" role="main" aria-label="Memvia" data-theme="auto" style="max-width: 780px; margin: 0 auto; --fs-scale: 1; display:none;">
+  <header class="app-header">
     <div class="header-blob b1"></div>
     <div class="header-blob b2"></div>
     <div class="header-row">
       <div style="display:flex; align-items:center; gap:14px;">
-        <div class="logo-mark"><img id="app-logo-img" src="icons/icon192.png" alt="Memvia" style="width:100%; height:100%; object-fit:cover; border-radius:18px;" /></div>
+        <div class="logo-mark"><img id="app-logo-img" src="icons/icon192.png" alt="" style="width:100%; height:100%; object-fit:cover; border-radius:18px;" /></div>
         <div>
           <h1 class="brand-title">Memvia</h1>
           <p class="brand-tagline">Tu gente, siempre cerca</p>
@@ -87,14 +88,18 @@
         <button id="theme-btn" class="header-btn" aria-label="Cambiar tema" title="Tema">🌓</button>
         <button id="simple-mode-btn" class="header-btn" aria-label="Modo simple" title="Modo simple"><i class="ti ti-toggle-left" aria-hidden="true"></i></button>
         <button id="text-size-btn" class="header-btn" aria-label="Cambiar tamaño de letra">A+</button>
-        <button id="settings-btn" class="header-btn" aria-label="Ajustes"><i class="ti ti-settings" aria-hidden="true"></i></button>
+        <button id="settings-btn" class="header-btn" aria-label="Ajustes" aria-expanded="false" aria-controls="settings-modal"><i class="ti ti-settings" aria-hidden="true"></i></button>
         <button id="logout-btn" class="header-btn" aria-label="Cerrar sesión" title="Cerrar sesión"><i class="ti ti-door-exit" aria-hidden="true"></i></button>
       </div>
     </div>
-  </div>
+  </header>
   <p id="orientation" class="orientation-line"></p>
   <div id="birthday-banner" class="birthday-banner" style="display:none;"></div>
   <div id="demo-banner" class="demo-banner" style="display:none;"></div>
+  <section id="missed-box" class="missed-box" aria-labelledby="missed-title" hidden>
+    <h2 id="missed-title">Se te ha pasado hoy</h2>
+    <ul id="missed-list" class="missed-list"></ul>
+  </section>
   <div id="save-error" class="save-error" role="alert" style="display:none;"></div>
 
   <section class="welcome-panel" aria-label="Resumen del día">
@@ -123,27 +128,27 @@
     </button>
   </section>
 
-  <div id="tabs" class="tabs-row">
-    <button id="tab-familia" class="tab-btn active"><i class="ti ti-users" aria-hidden="true"></i>Familia</button>
-    <button id="tab-mapa" class="tab-btn"><i class="ti ti-map-2" aria-hidden="true"></i>Mapa</button>
-    <button id="tab-dia" class="tab-btn"><i class="ti ti-calendar-event" aria-hidden="true"></i>Mi día</button>
-    <button id="tab-meds" class="tab-btn"><i class="ti ti-pill" aria-hidden="true"></i>Medicación</button>
-    <button id="tab-recuerdos" class="tab-btn"><i class="ti ti-photo" aria-hidden="true"></i>Recuerdos</button>
-    <button id="tab-juego" class="tab-btn"><i class="ti ti-puzzle" aria-hidden="true"></i>Juego</button>
-  </div>
+  <nav aria-label="Secciones"><div id="tabs" class="tabs-row" role="tablist" aria-label="Secciones de Memvia">
+    <button id="tab-familia" role="tab" aria-controls="view-familia" aria-selected="true" class="tab-btn active"><i class="ti ti-users" aria-hidden="true"></i>Familia</button>
+    <button id="tab-mapa" role="tab" aria-controls="view-mapa" aria-selected="false" class="tab-btn"><i class="ti ti-map-2" aria-hidden="true"></i>Mapa</button>
+    <button id="tab-dia" role="tab" aria-controls="view-dia" aria-selected="false" class="tab-btn"><i class="ti ti-calendar-event" aria-hidden="true"></i>Mi día</button>
+    <button id="tab-meds" role="tab" aria-controls="view-meds" aria-selected="false" class="tab-btn"><i class="ti ti-pill" aria-hidden="true"></i>Medicación</button>
+    <button id="tab-recuerdos" role="tab" aria-controls="view-recuerdos" aria-selected="false" class="tab-btn"><i class="ti ti-photo" aria-hidden="true"></i>Recuerdos</button>
+    <button id="tab-juego" role="tab" aria-controls="view-juego" aria-selected="false" class="tab-btn"><i class="ti ti-puzzle" aria-hidden="true"></i>Juego</button>
+  </div></nav>
 
-  <div id="view-familia" class="fade-in">
+  <div id="view-familia" role="tabpanel" aria-labelledby="tab-familia" class="fade-in">
     <div id="family-grid" class="family-grid"></div>
     <details id="add-details">
       <summary class="add-summary"><i class="ti ti-plus" aria-hidden="true"></i><span id="add-summary-text">Añadir un familiar</span></summary>
       <form id="add-form" class="form-card">
-        <div><label class="f-label">👤 Nombre</label><input id="f-name" type="text" placeholder="María" /></div>
-        <div><label class="f-label">💞 Parentesco</label><input id="f-relation" type="text" placeholder="Hija" /></div>
+        <div><label class="f-label" for="f-name">👤 Nombre</label><input id="f-name" type="text" placeholder="María" /></div>
+        <div><label class="f-label" for="f-relation">💞 Parentesco</label><input id="f-relation" type="text" placeholder="Hija" /></div>
         <div>
-          <label class="f-label">🙂 Icono (opcional)</label>
-          <div id="icon-picker" class="icon-picker"></div>
+          <span class="f-label" id="icon-label">🙂 Icono (opcional)</span>
+          <div id="icon-picker" class="icon-picker" role="group" aria-labelledby="icon-label"></div>
         </div>
-        <div><label class="f-label">🖼️ Foto (opcional)</label>
+        <div><label class="f-label" for="f-photo-btn">🖼️ Foto (opcional)</label>
           <input id="f-photo" type="hidden" />
           <input id="f-photo-file" type="file" accept="image/*" style="display:none" />
           <div class="photo-pick"><div id="f-photo-prev" class="photo-prev"><i class="ti ti-camera" aria-hidden="true"></i></div>
@@ -152,10 +157,10 @@
             <button type="button" id="f-photo-cam-btn" class="secondary-btn"><i class="ti ti-camera" aria-hidden="true"></i> Hacer una foto</button>
             <button type="button" id="f-photo-btn" class="secondary-btn"><i class="ti ti-photo" aria-hidden="true"></i> Elegir de la galería</button>
           </div></div></div>
-        <div><label class="f-label">📞 Teléfono con prefijo de país, ej. 34600123456 (opcional)</label><input id="f-phone" type="tel" placeholder="34600123456" /></div>
-        <div><label class="f-label">🎂 Cumpleaños (opcional)</label><input id="f-birthday" type="date" /></div>
+        <div><label class="f-label" for="f-phone">📞 Teléfono con prefijo de país, ej. 34600123456 (opcional)</label><input id="f-phone" type="tel" placeholder="34600123456" /></div>
+        <div><label class="f-label" for="f-birthday">🎂 Cumpleaños (opcional)</label><input id="f-birthday" type="date" /></div>
         <div id="f-address-slot"></div>
-        <div><label class="f-label">❤️ Algo especial de él/ella (opcional)</label><input id="f-note" type="text" placeholder="Ej.: Le gusta pasear contigo" /></div>
+        <div><label class="f-label" for="f-note">❤️ Algo especial de él/ella (opcional)</label><input id="f-note" type="text" placeholder="Ej.: Le gusta pasear contigo" /></div>
         <p id="add-error" class="error-text" style="display:none;">Escribe al menos el nombre y el parentesco.</p>
         <button type="submit" class="primary-btn" id="f-submit">Guardar familiar</button>
         <button type="button" class="secondary-btn" id="f-cancel-edit" style="display:none;">Cancelar</button>
@@ -163,7 +168,7 @@
     </details>
   </div>
 
-  <div id="view-mapa" style="display:none;">
+  <div id="view-mapa" role="tabpanel" aria-labelledby="tab-mapa" style="display:none;">
     <div class="map-toggle" role="group" aria-label="Tipo de mapa">
       <button type="button" id="map-mode-real" class="active" aria-pressed="true"><i class="ti ti-map-2" aria-hidden="true"></i>Mapa</button>
       <button type="button" id="map-mode-schema" aria-pressed="false"><i class="ti ti-circles-relation" aria-hidden="true"></i>Esquema</button>
@@ -182,9 +187,9 @@
     <details id="add-place-details">
       <summary class="add-summary"><i class="ti ti-map-pin-plus" aria-hidden="true"></i>Añadir un lugar importante</summary>
       <form id="place-form" class="form-card">
-        <div><label class="f-label">📍 Nombre</label><input id="p-name" type="text" placeholder="Centro de salud" /></div>
+        <div><label class="f-label" for="p-name">📍 Nombre</label><input id="p-name" type="text" placeholder="Centro de salud" /></div>
         <div>
-          <label class="f-label">Tipo</label>
+          <label class="f-label" for="p-category">Tipo</label>
           <select id="p-category">
             <option value="medico">🩺 Médico</option>
             <option value="farmacia">💊 Farmacia</option>
@@ -199,7 +204,7 @@
     </details>
   </div>
 
-  <div id="view-dia" style="display:none;">
+  <div id="view-dia" role="tabpanel" aria-labelledby="tab-dia" style="display:none;">
     <section class="section-card">
       <div class="section-heading">
         <div><div class="eyebrow">HOY</div><h2>Mi día</h2><p>Tus tareas de hoy, marca cada una al terminarla.</p></div>
@@ -207,7 +212,7 @@
       </div>
       <div id="reminders-list" class="reminders-list"></div>
       <form id="reminder-form" class="reminder-form-grid">
-        <select id="r-icon">
+        <select id="r-icon" aria-label="Tipo de aviso">
           <option value="⏰">⏰ General</option>
           <option value="🍽️">🍽️ Comida</option>
           <option value="💊">💊 Medicación</option>
@@ -222,7 +227,7 @@
     </section>
   </div>
 
-  <div id="view-meds" style="display:none;">
+  <div id="view-meds" role="tabpanel" aria-labelledby="tab-meds" style="display:none;">
     <section class="section-card">
       <div class="section-heading">
         <div><div class="eyebrow">SALUD</div><h2>Medicación</h2><p>Tus medicamentos y a qué hora tocan.</p></div>
@@ -230,9 +235,9 @@
       </div>
       <div id="meds-list" class="reminders-list"></div>
       <form id="med-form" class="form-card">
-        <div><label class="f-label">💊 Nombre del medicamento</label><input id="m-name" type="text" placeholder="Ej.: Pastilla para la tensión" /></div>
-        <div><label class="f-label">🧪 Dosis (opcional)</label><input id="m-dose" type="text" placeholder="Ej.: 1 comprimido" /></div>
-        <div><label class="f-label">⏰ Hora</label><input id="m-time" type="time" /></div>
+        <div><label class="f-label" for="m-name">💊 Nombre del medicamento</label><input id="m-name" type="text" placeholder="Ej.: Pastilla para la tensión" /></div>
+        <div><label class="f-label" for="m-dose">🧪 Dosis (opcional)</label><input id="m-dose" type="text" placeholder="Ej.: 1 comprimido" /></div>
+        <div><label class="f-label" for="m-time">⏰ Hora</label><input id="m-time" type="time" /></div>
         <p class="hint-text">Esto es solo para recordarte tu propia pauta. Memvia no da recomendaciones médicas.</p>
         <p id="med-error" class="error-text" style="display:none;">Escribe el nombre y la hora.</p>
         <button type="submit" class="primary-btn">Guardar medicamento</button>
@@ -240,7 +245,7 @@
     </section>
   </div>
 
-  <div id="view-recuerdos" style="display:none;">
+  <div id="view-recuerdos" role="tabpanel" aria-labelledby="tab-recuerdos" style="display:none;">
     <section class="section-card">
       <div class="section-heading">
         <div><div class="eyebrow">CON CARIÑO</div><h2>Recuerdos</h2><p>Pequeñas historias y momentos importantes.</p></div>
@@ -248,31 +253,31 @@
       </div>
       <div id="memories-list" class="reminders-list"></div>
       <form id="memory-form" class="form-card">
-        <div><label class="f-label">📌 Título</label><input id="mem-title" type="text" placeholder="Ej.: El viaje a la playa" /></div>
-        <div><label class="f-label">✍️ Historia o recuerdo</label><textarea id="mem-text" rows="3" placeholder="Cuéntalo aquí..." style="width:100%; font-size:16px; padding:10px 14px; border:1px solid var(--border); background:var(--surface-2); border-radius:12px;"></textarea></div>
+        <div><label class="f-label" for="mem-title">📌 Título</label><input id="mem-title" type="text" placeholder="Ej.: El viaje a la playa" /></div>
+        <div><label class="f-label" for="mem-text">✍️ Historia o recuerdo</label><textarea id="mem-text" rows="3" placeholder="Cuéntalo aquí..." style="width:100%; font-size:16px; padding:10px 14px; border:1px solid var(--border); background:var(--surface-2); border-radius:12px;"></textarea></div>
         <p id="memory-error" class="error-text" style="display:none;">Escribe al menos un título.</p>
         <button type="submit" class="primary-btn">Guardar recuerdo</button>
       </form>
     </section>
   </div>
 
-  <div id="view-juego" style="display:none;">
+  <div id="view-juego" role="tabpanel" aria-labelledby="tab-juego" style="display:none;">
     <section class="section-card">
       <div class="section-heading">
         <div><div class="eyebrow">EJERCICIO</div><h2>¿Quién es?</h2><p>Un juego sencillo para practicar caras y nombres.</p></div>
         <span class="section-badge"><i class="ti ti-puzzle" aria-hidden="true"></i></span>
       </div>
-      <div id="quiz-area"></div>
+      <div id="quiz-area" aria-live="polite"></div>
     </section>
   </div>
 
-  <div id="settings-modal" style="display:none; margin-top: 12px;">
+  <div id="settings-modal" role="region" aria-labelledby="settings-title" style="display:none; margin-top: 12px;">
     <div class="form-card">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-        <h3 style="margin:0; font-size:19px; font-family: var(--font-display);">⚙️ Ajustes</h3>
-        <button id="close-settings-x" aria-label="Cerrar ajustes" style="width:34px; height:34px; border-radius:50%; border:none; background:var(--surface-2); cursor:pointer;"><i class="ti ti-x" aria-hidden="true"></i></button>
+        <h2 id="settings-title" tabindex="-1" style="margin:0; font-size:19px; font-family: var(--font-display);">⚙️ Ajustes</h2>
+        <button id="close-settings-x" aria-label="Cerrar ajustes" style="width:44px; height:44px; border-radius:50%; border:none; background:var(--surface-2); cursor:pointer;"><i class="ti ti-x" aria-hidden="true"></i></button>
       </div>
-      <label class="f-label">👤 Tu nombre</label>
+      <label class="f-label" for="u-name">👤 Tu nombre</label>
       <input id="u-name" type="text" placeholder="Tu nombre" style="margin-bottom:14px;" />
       <div id="h-address-slot" style="margin-bottom:10px;"></div>
       <p id="home-error" class="error-text" style="display:none;">Busca tu dirección y elige una opción de la lista.</p>
@@ -286,6 +291,14 @@
         <button id="import-btn" class="secondary-btn" style="flex:1;"><i class="ti ti-upload" aria-hidden="true"></i> Importar copia</button>
         <input id="import-file" type="file" accept="application/json" style="display:none;" />
       </div>
+      <div class="notif-box">
+        <h4>🔔 Avisos</h4>
+        <p id="notif-status" class="hint-text" role="status"></p>
+        <button id="notif-btn" class="secondary-btn" style="width:100%;"><i class="ti ti-bell" aria-hidden="true"></i> <span>Activar avisos del aparato</span></button>
+        <button id="ics-btn" class="secondary-btn" style="width:100%; margin-top:8px;"><i class="ti ti-calendar-plus" aria-hidden="true"></i> Llevar los avisos a mi calendario</button>
+        <p id="ics-msg" class="hint-text" role="status"></p>
+        <p class="hint-text">Si Memvia está cerrada del todo, el móvil puede no avisar. El calendario sí: tras añadir el archivo, tus tareas y medicación sonarán cada día a su hora. El archivo contiene los nombres de tus medicamentos: guárdalo con cuidado.</p>
+      </div>
       <button id="wipe-btn" class="secondary-btn" style="width:100%; margin-top:8px; color: var(--text-danger);"><i class="ti ti-trash" aria-hidden="true"></i> Borrar todos los datos</button>
       <button id="delete-account-btn" class="secondary-btn" style="width:100%; margin-top:8px; color: var(--text-danger);"><i class="ti ti-user-x" aria-hidden="true"></i> Eliminar mi cuenta</button>
       <p class="hint-text" style="margin:12px 0 0; text-align:center;"><a href="privacidad.html" target="_blank" rel="noopener" style="color:var(--text-accent); font-weight:700;">Política de privacidad y aviso legal</a></p>
@@ -294,7 +307,7 @@
 
   <div id="loading" style="font-size:14px; color: var(--text-muted); margin-top: 1rem;">Cargando…</div>
 
-  <div id="profile-modal" style="display:none; position:fixed; inset:0; background:rgba(20,10,5,.45); z-index:50; align-items:center; justify-content:center; padding:20px;">
+  <div id="profile-modal" role="dialog" aria-modal="true" aria-label="Ficha del familiar" style="display:none; position:fixed; inset:0; background:rgba(20,10,5,.45); z-index:50; align-items:center; justify-content:center; padding:20px;">
     <div id="profile-card" class="form-card" style="max-width:380px; width:100%; text-align:center; position:relative;"></div>
   </div>
 

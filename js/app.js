@@ -7,6 +7,7 @@ import { DEMO_STATE, DEMO_KEY } from './demo.js';
 import { crearMapa } from './mapa.js';
 import { crearBuscador } from './buscador.js';
 import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
+import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } from './avisos.js';
 
 (function() {
   const RELATION_STYLES = [
@@ -99,7 +100,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'icon-chip' + (selectedIcon === icon ? ' selected' : '');
-      chip.textContent = icon;
+      chip.textContent = icon; chip.setAttribute('aria-pressed', selectedIcon === icon ? 'true' : 'false'); chip.setAttribute('aria-label', 'Icono ' + icon);
       chip.onclick = () => { selectedIcon = selectedIcon === icon ? '' : icon; renderIconPicker(); };
       wrap.appendChild(chip);
     });
@@ -211,17 +212,18 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       card.innerHTML = `
         <div class="fam-ribbon" style="background:${s.bg};"></div>
         <div class="fam-move">
-          <button aria-label="Mover antes" ${idx === 0 ? 'disabled' : ''}><i class="ti ti-chevron-up" aria-hidden="true"></i></button>
-          <button aria-label="Mover después" ${idx === family.length - 1 ? 'disabled' : ''}><i class="ti ti-chevron-down" aria-hidden="true"></i></button>
+          <button type="button" aria-label="Mover a ${escapeHtml(f.name)} antes" ${idx === 0 ? 'disabled' : ''}><i class="ti ti-chevron-up" aria-hidden="true"></i></button>
+          <button type="button" aria-label="Mover a ${escapeHtml(f.name)} después" ${idx === family.length - 1 ? 'disabled' : ''}><i class="ti ti-chevron-down" aria-hidden="true"></i></button>
         </div>
-        <button class="fam-star ${f.primary ? 'active' : ''}" aria-label="Marcar como contacto principal" title="Contacto principal"><i class="ti ${f.primary ? 'ti-star-filled' : 'ti-star'}" aria-hidden="true"></i></button>
+        <button class="fam-star ${f.primary ? 'active' : ''}" aria-label="${f.primary ? 'Contacto principal: ' : 'Marcar como contacto principal: '}${escapeHtml(f.name)}" aria-pressed="${f.primary ? 'true' : 'false'}" title="Contacto principal"><i class="ti ${f.primary ? 'ti-star-filled' : 'ti-star'}" aria-hidden="true"></i></button>
         <div class="avatar" style="background:${s.bg}; color:${s.text};">${avatarContent(f)}</div>
-        <p class="fam-name">${escapeHtml(f.name)}</p>
+        <p class="fam-name"><button type="button" class="fam-open" aria-haspopup="dialog">${escapeHtml(f.name)}</button></p>
         <p class="fam-relation"><i class="ti ${s.icon}" aria-hidden="true" style="font-size:15px;"></i>${escapeHtml(f.relation)}</p>
         ${f.address ? `<p class="fam-address">${escapeHtml(f.address)}</p>` : ''}
         ${f.address && !hasCoords(f) ? '<p class="fam-unplaced">📍 Sin ubicar en el mapa</p>' : ''}
         <div class="fam-actions"></div>
       `;
+      card.querySelector('.fam-open').onclick = () => openProfile(f);
       card.querySelector('.fam-star').onclick = () => { family.forEach(x => x.primary = false); f.primary = true; saveFamily(); renderFamily(); };
       const moveBtns = card.querySelectorAll('.fam-move button');
       moveBtns[0].onclick = () => { if (idx > 0) { [family[idx - 1], family[idx]] = [family[idx], family[idx - 1]]; saveFamily(); renderFamily(); } };
@@ -262,7 +264,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
         saveFamily(); renderFamily(); renderMap(); updateDashboard();
       };
       actions.appendChild(delBtn);
-      card.addEventListener('click', (ev) => { if (!ev.target.closest('.fam-actions, .fam-move, .fam-star')) openProfile(f); });
+      card.addEventListener('click', (ev) => { if (!ev.target.closest('.fam-actions, .fam-move, .fam-star, .fam-open')) openProfile(f); });
       grid.appendChild(card);
     });
   }
@@ -457,18 +459,27 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       const item = document.createElement('div');
       item.className = 'reminder-item' + (r.done ? ' done' : '');
       item.innerHTML = `<div class="reminder-main">
-          <button class="reminder-check ${r.done ? 'checked' : ''}" aria-label="Marcar como hecho">${r.done ? '<i class=\"ti ti-check\"></i>' : ''}</button>
+          <button class="reminder-check ${r.done ? 'checked' : ''}" aria-pressed="${r.done ? 'true' : 'false'}" aria-label="Hecho: ${escapeHtml(r.text)}">${r.done ? '<i class=\"ti ti-check\"></i>' : ''}</button>
           <span class="reminder-time">${escapeHtml(r.time)}</span>
           <span class="reminder-text ${r.done ? 'done-text' : ''}">${r.icon || '⏰'} ${escapeHtml(r.text)}</span>
         </div>`;
-      item.querySelector('.reminder-check').onclick = () => { r.done = !r.done; saveReminders(); renderReminders(); updateDashboard(); };
+      item.querySelector('.reminder-check').onclick = () => { r.done = !r.done; saveReminders(); renderReminders(); updateDashboard(); renderMissed(); };
       const del = document.createElement('button');
-      del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar');
+      del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar: ' + r.text);
       del.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
-      del.onclick = () => { reminders = reminders.filter(x => x.id !== r.id); saveReminders(); renderReminders(); updateDashboard(); };
+      del.onclick = () => { reminders = reminders.filter(x => x.id !== r.id); saveReminders(); renderReminders(); updateDashboard(); renderMissed(); };
       item.appendChild(del);
       list.appendChild(item);
     });
+  }
+
+  function takeMed(m, fromMissed) {
+    m.history = m.history || [];
+    m.history.push(new Date().toLocaleString('es-ES'));
+    if (m.history.length > 10) m.history = m.history.slice(-10);
+    m.lastTaken = new Date().toISOString();
+    saveMeds(); renderMeds(); renderMissed();
+    speak(`Anotado. Has tomado ${m.name}.`);
   }
 
   function renderMeds() {
@@ -486,19 +497,13 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
         </div>`;
       const takeBtn = document.createElement('button');
       takeBtn.className = 'med-take-btn';
-      takeBtn.textContent = 'Ya lo he tomado';
-      takeBtn.onclick = () => {
-        m.history = m.history || [];
-        m.history.push(new Date().toLocaleString('es-ES'));
-        if (m.history.length > 10) m.history = m.history.slice(-10);
-        saveMeds(); renderMeds();
-        speak(`Anotado. Has tomado ${m.name}.`);
-      };
+      takeBtn.textContent = 'Ya lo he tomado'; takeBtn.setAttribute('aria-label', 'Ya he tomado: ' + m.name);
+      takeBtn.onclick = () => takeMed(m);
       item.appendChild(takeBtn);
       const del = document.createElement('button');
-      del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar');
+      del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar: ' + m.name);
       del.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
-      del.onclick = () => { meds = meds.filter(x => x.id !== m.id); saveMeds(); renderMeds(); };
+      del.onclick = () => { meds = meds.filter(x => x.id !== m.id); saveMeds(); renderMeds(); renderMissed(); };
       item.appendChild(del);
       list.appendChild(item);
     });
@@ -513,7 +518,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       item.className = 'memory-item';
       item.innerHTML = `<h4>❤️ ${escapeHtml(mem.title)}</h4><p>${escapeHtml(mem.text)}</p>`;
       const del = document.createElement('button');
-      del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar');
+      del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar recuerdo: ' + mem.title);
       del.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
       del.style.float = 'right';
       del.onclick = () => { memories = memories.filter(x => x.id !== mem.id); saveMemories(); renderMemories(); };
@@ -648,7 +653,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
   function renderAll() {
     applyTextSize(); applySimpleMode(); applyTheme(); renderIconPicker();
     document.getElementById('loading').style.display = 'none';
-    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays();
+    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays(); missedSig = '\0'; checkAlerts();
   }
 
   let consentPrompting = false;
@@ -666,6 +671,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     clearSelection(true); routeCache.clear();
     applyTextSize(); applySimpleMode(); applyTheme();
     renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard();
+    missedSig = '\0'; renderMissed();
   }
 
   async function deleteAccount() {
@@ -826,12 +832,107 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     });
   };
 
+  /* ---- Avisos: voz, notificación del aparato y avisos perdidos ---- */
+  const NOTIF_KEY = 'memvia_notif';
+  function notifSupported() { return 'Notification' in window; }
+  function notifEnabled() {
+    try { return notifSupported() && Notification.permission === 'granted' && localStorage.getItem(NOTIF_KEY) === '1'; } catch (e) { return false; }
+  }
+  async function notify(title, body, tag) {
+    if (!notifEnabled()) return;
+    const opts = { body, tag, lang: 'es', icon: 'icons/icon192.png', badge: 'icons/icon192.png', vibrate: [200, 100, 200], requireInteraction: true };
+    try {
+      const reg = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : null;
+      if (reg && reg.showNotification) await reg.showNotification(title, opts); else new Notification(title, opts);
+    } catch (e) { /* sin notificación: queda la voz y el aviso en pantalla */ }
+  }
+
+  let sonados = new Set(), sonadosDia = '';
   function checkAlerts() {
     const now = new Date();
-    const hhmm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    reminders.filter(r => !r.done && r.time === hhmm && r._last !== hhmm).forEach(r => { r._last = hhmm; speak('Aviso: ' + r.text); });
-    meds.filter(m => m.time === hhmm && m._last !== hhmm).forEach(m => { m._last = hhmm; speak('Es hora de tu medicación: ' + m.name); });
+    const dia = now.toDateString();
+    if (dia !== sonadosDia) { sonadosDia = dia; sonados = cargarSonados(now); }
+    let nuevos = false;
+    estadoAvisos(reminders, meds, now).filter(a => a.estado === 'ahora' && !sonados.has(claveAviso(a))).forEach(a => {
+      sonados.add(claveAviso(a)); nuevos = true;
+      const texto = a.tipo === 'm' ? 'Es hora de tu medicación: ' + a.texto : 'Aviso: ' + a.texto;
+      speak(texto);
+      notify(a.tipo === 'm' ? 'Medicación' : 'Memvia', a.icono + ' ' + a.texto + ' · ' + a.time, claveAviso(a));
+    });
+    if (nuevos) guardarSonados(now, sonados);
+    renderMissed();
   }
+
+  // Avisos de hoy que ya pasaron y siguen sin marcarse. Se calculan de los datos, no se guardan.
+  let missedSig = '';
+  function renderMissed() {
+    const box = document.getElementById('missed-box');
+    if (!box) return;
+    const lista = estadoAvisos(reminders, meds, new Date()).filter(a => a.estado === 'perdido').sort((a, b) => a.time.localeCompare(b.time));
+    const sig = lista.map(claveAviso).join('|');
+    if (sig === missedSig) return;
+    missedSig = sig;
+    const ul = document.getElementById('missed-list');
+    ul.innerHTML = '';
+    box.hidden = !lista.length;
+    lista.forEach(a => {
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = a.time + ' · ' + a.icono + ' ' + a.texto;
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'missed-ok';
+      btn.textContent = a.tipo === 'm' ? 'Ya lo he tomado' : 'Ya está hecho';
+      btn.setAttribute('aria-label', btn.textContent + ': ' + a.texto);
+      btn.onclick = () => {
+        if (a.tipo === 'm') { const m = meds.find(x => x.id === a.id); if (m) takeMed(m, true); }
+        else { const r = reminders.find(x => x.id === a.id); if (r) r.done = true; saveReminders(); renderReminders(); updateDashboard(); renderMissed(); }
+      };
+      li.appendChild(span); li.appendChild(btn); ul.appendChild(li);
+    });
+  }
+  // Al volver a la app (móvil que estaba dormido o app en segundo plano) se ponen al día los avisos
+  document.addEventListener('visibilitychange', function() { if (!document.hidden && timersStarted) { checkAlerts(); updateOrientation(); } });
+  window.addEventListener('focus', function() { if (timersStarted) checkAlerts(); });
+  // Los móviles solo dejan hablar a la app después de un toque: se "desbloquea" con el primero
+  document.addEventListener('pointerdown', function unlockSpeech() {
+    document.removeEventListener('pointerdown', unlockSpeech, true);
+    try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis.speak(u); } catch (e) {}
+  }, true);
+
+  /* ---- Ajustes de avisos ---- */
+  function refreshNotifUI() {
+    const st = document.getElementById('notif-status'), btn = document.getElementById('notif-btn');
+    if (!st || !btn) return;
+    const lbl = btn.querySelector('span');
+    btn.disabled = false;
+    if (!notifSupported()) { st.textContent = 'Este navegador no permite avisos del aparato. Usa el calendario (botón de abajo).'; btn.disabled = true; lbl.textContent = 'Avisos no disponibles'; return; }
+    if (Notification.permission === 'denied') { st.textContent = 'Los avisos están bloqueados en el navegador. Para activarlos, permítelos en los ajustes del sitio.'; btn.disabled = true; lbl.textContent = 'Avisos bloqueados'; return; }
+    if (notifEnabled()) { st.textContent = 'Activados: este aparato te avisará a la hora de cada tarea y medicamento mientras Memvia esté abierta o en segundo plano.'; lbl.textContent = 'Desactivar avisos del aparato'; }
+    else { st.textContent = 'Desactivados.'; lbl.textContent = 'Activar avisos del aparato'; }
+    btn.setAttribute('aria-pressed', notifEnabled() ? 'true' : 'false');
+  }
+  document.getElementById('notif-btn').onclick = async function() {
+    if (notifEnabled()) { try { localStorage.setItem(NOTIF_KEY, '0'); } catch (e) {} refreshNotifUI(); return; }
+    let perm = Notification.permission;
+    if (perm === 'default') { try { perm = await Notification.requestPermission(); } catch (e) { perm = 'denied'; } }
+    if (perm === 'granted') {
+      try { localStorage.setItem(NOTIF_KEY, '1'); } catch (e) {}
+      refreshNotifUI();
+      notify('Memvia', 'Los avisos funcionan. Te avisaremos a la hora de tus tareas y medicación.', 'memvia-prueba');
+    } else refreshNotifUI();
+  };
+  document.getElementById('ics-btn').onclick = function() {
+    const { texto, eventos } = crearICS(reminders, meds, new Date());
+    const msg = document.getElementById('ics-msg');
+    if (!eventos) { msg.textContent = 'Todavía no hay tareas ni medicación con hora para llevar al calendario.'; return; }
+    const blob = new Blob([texto], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'memvia-avisos.ics';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    msg.textContent = 'Archivo descargado con ' + eventos + (eventos === 1 ? ' aviso' : ' avisos') + '. Ábrelo para añadirlos a tu calendario: sonarán cada día aunque Memvia esté cerrada.';
+  };
 
   document.getElementById('text-size-btn').onclick = function() {
     fsScale = fsScale >= 1.3 ? 1 : Math.round((fsScale + 0.15) * 100) / 100;
@@ -850,7 +951,10 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
 
   function activateTab(name) {
     ['familia', 'mapa', 'dia', 'meds', 'recuerdos', 'juego'].forEach(tab => {
-      document.getElementById('tab-' + tab).classList.toggle('active', tab === name);
+      const tb = document.getElementById('tab-' + tab);
+      tb.classList.toggle('active', tab === name);
+      tb.setAttribute('aria-selected', tab === name ? 'true' : 'false');
+      tb.tabIndex = tab === name ? 0 : -1;
       const view = document.getElementById('view-' + tab);
       view.style.display = tab === name ? 'block' : 'none';
       if (tab === name) { view.classList.remove('fade-in'); void view.offsetWidth; view.classList.add('fade-in'); }
@@ -861,6 +965,19 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     if (name === 'recuerdos') renderMemories();
     if (name === 'juego') { quizScore = { correct: 0, total: 0 }; renderQuiz(); }
   }
+  // Flechas, Inicio y Fin para moverse entre pestañas
+  document.getElementById('tabs').addEventListener('keydown', function(e) {
+    const tabs = [...document.querySelectorAll('#tabs [role=tab]')].filter(t => t.offsetParent !== null);
+    const i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    let j = null;
+    if (e.key === 'ArrowRight') j = (i + 1) % tabs.length;
+    else if (e.key === 'ArrowLeft') j = (i - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') j = 0;
+    else if (e.key === 'End') j = tabs.length - 1;
+    if (j === null) return;
+    e.preventDefault(); tabs[j].focus(); tabs[j].click();
+  });
   document.getElementById('tab-familia').onclick = () => activateTab('familia');
   document.getElementById('tab-mapa').onclick = () => activateTab('mapa');
   document.getElementById('tab-dia').onclick = () => activateTab('dia');
@@ -1031,6 +1148,7 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
       document.getElementById('u-name').value = userName || '';
       homeSearch.poner(home ? { direccion: home.address, lat: home.lat, lng: home.lng } : null);
       document.getElementById('home-error').style.display = 'none';
+      refreshNotifUI(); document.getElementById('ics-msg').textContent = '';
       modal.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }
   };
@@ -1146,10 +1264,47 @@ import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
     if (e.target.closest('button, a, .icon-chip, .fam-star, .reminder-check')) playClickSound();
   }, true);
 
+  /* ---- Ventanas: foco, Escape y vuelta al botón que las abrió ---- */
+  (function initModales() {
+    const settings = document.getElementById('settings-modal'), profile = document.getElementById('profile-modal');
+    const settingsBtn = document.getElementById('settings-btn');
+    let profileTrigger = null;
+    const open = el => el.style.display !== 'none' && el.style.display !== '';
+    new MutationObserver(function() {
+      const abierto = open(settings);
+      settingsBtn.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+      if (abierto) { const h = document.getElementById('settings-title'); if (h) h.focus({ preventScroll: true }); }
+    }).observe(settings, { attributes: true, attributeFilter: ['style'] });
+    let profileWasOpen = false;
+    new MutationObserver(function() {
+      const abierto = open(profile);
+      if (abierto && !profileWasOpen) {
+        profileTrigger = document.activeElement;
+        const c = profile.querySelector('.profile-close'); if (c) c.focus();
+        document.getElementById('app').querySelectorAll(':scope > :not(#profile-modal):not(dialog):not(#save-error)').forEach(n => n.setAttribute('inert', ''));
+      } else if (!abierto && profileWasOpen) {
+        document.getElementById('app').querySelectorAll(':scope > [inert]').forEach(n => n.removeAttribute('inert'));
+        if (profileTrigger && document.contains(profileTrigger)) profileTrigger.focus();
+      }
+      profileWasOpen = abierto;
+    }).observe(profile, { attributes: true, attributeFilter: ['style'] });
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      if (document.getElementById('confirm-dlg').open) return;   // el <dialog> nativo ya se cierra solo
+      if (open(profile)) { profile.style.display = 'none'; e.preventDefault(); }
+      else if (open(settings) && settings.contains(document.activeElement)) { settings.style.display = 'none'; settingsBtn.focus(); e.preventDefault(); }
+    });
+  })();
+
   (function initWelcomeScreen() {
     const welcomeEl = document.getElementById('welcome-screen');
     try { if (localStorage.getItem('memvia_skip_welcome') === '1') welcomeEl.style.display = 'none'; } catch (e) { /* ignorar */ }
-    document.getElementById('welcome-continue-btn').onclick = function() {
+    // Mientras se ve la bienvenida, el resto de la página no se puede tocar ni leer (inert)
+    const resto = ['setup-needed', 'auth-gate', 'app'].map(id => document.getElementById(id)).filter(Boolean);
+    const cont = document.getElementById('welcome-continue-btn');
+    if (welcomeEl.style.display !== 'none') { resto.forEach(n => n.setAttribute('inert', '')); cont.focus(); }
+    cont.onclick = function() {
+      resto.forEach(n => n.removeAttribute('inert'));
       try { if (document.getElementById('welcome-skip-check').checked) localStorage.setItem('memvia_skip_welcome', '1'); } catch (e) { /* ignorar */ }
       welcomeEl.style.opacity = '0';
       welcomeEl.style.transition = 'opacity .3s ease';
