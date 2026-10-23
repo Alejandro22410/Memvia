@@ -704,7 +704,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
         showSaveError('Tus datos se han borrado. Para eliminar también tu usuario, cierra sesión, vuelve a entrar y repite «Eliminar mi cuenta».');
         if (auth) auth.signOut();
       } else {
-        showSaveError('Tus datos se han borrado, pero no se pudo eliminar el usuario. Escribe al correo de privacidad.');
+        showSaveError('Tus datos se han borrado, pero no se pudo eliminar el usuario. Abre una incidencia en el repositorio de GitHub (enlace en la política de privacidad).');
       }
       return;
     }

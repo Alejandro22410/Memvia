@@ -19,7 +19,7 @@ reconocer a la familia, saber dónde vive y recordar el día.
 
 ## Índice
 
-[Qué hace](#-qué-hace) · [Cómo funciona](#-cómo-funciona) · [Probarla](#-probarla) · [Instalarla](#-instalarla-como-app) · [Tu propio Firebase](#-poner-tu-propia-cuenta-de-firebase) · [Avisos](#-avisos) · [Accesibilidad](#-accesibilidad) · [Archivos](#-archivos) · [Privacidad](#-privacidad-y-legal) · [Límites](#-límites) · [Ideas futuras](#-ideas-futuras) · [Créditos](#-créditos)
+[Qué hace](#-qué-hace) · [Cómo funciona](#-cómo-funciona) · [Probarla](#-probarla) · [Instalarla](#-instalarla-como-app) · [Tu propio Firebase](#-poner-tu-propia-cuenta-de-firebase) · [Avisos](#-avisos) · [Accesibilidad](#-accesibilidad) · [Archivos](#-archivos) · [Privacidad](#-privacidad-y-legal) · [Límites](#-límites) · [Ideas futuras](#-ideas-futuras)
 
 ## 🧠 El problema
 
@@ -154,7 +154,7 @@ Pensada para personas mayores: campos con etiqueta, pestañas con teclado (flech
 ## 🔒 Privacidad y legal
 
 - `privacidad.html` incluye política de privacidad, bases legales (RGPD y LOPDGDD), derechos, destinatarios, cookies y aviso legal.
-- **Antes de publicar, completa los datos entre `[[corchetes]]`** (responsable, correo de contacto y NIF o domicilio). Mientras falte alguno, la página muestra un aviso amarillo.
+- El responsable es Alejandro Narvaez Jaime (proyecto educativo) y el contacto es por «Issues» de GitHub, sin correo ni domicilio publicados. Si lo publicas como servicio real, cambia estos datos por los de una persona o entidad responsable.
 - Al crear una cuenta hay una casilla de **consentimiento explícito** para datos de salud (medicación), guardada con la versión de la política y la fecha. Si una cuenta antigua no lo tiene, la app lo pide al entrar.
 - En Ajustes: **Exportar copia** (portabilidad) y **Eliminar mi cuenta** (borra datos y usuario).
 - Sin cuenta (demostración) nada sale del dispositivo, salvo búsquedas de dirección y rutas.
@@ -181,7 +181,5 @@ Pensada para personas mayores: campos con etiqueta, pestañas con teclado (flech
 - Más idiomas (catalán, inglés).
 
 ## 🙏 Créditos
-
-Mapa © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright) (ODbL) · [Leaflet](https://leafletjs.com) · [Tabler Icons](https://tabler.io/icons) · Fraunces y Nunito (Google Fonts) · Firebase.
 
 Hecho por **Alejandro Narvaez Jaime** (Codelearn Gava) para Coolest Projects.
