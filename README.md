@@ -31,6 +31,17 @@ Memvia lo pone todo en una pantalla grande y sencilla. Un familiar o cuidador la
 - 🆘 **Botón SOS:** llama a un familiar.
 - 🔠 **Fácil de usar:** letra grande, botones grandes, modo simple y modo oscuro.
 
+## 📸 Así se ve
+
+<table>
+<tr>
+<td align="center"><img src="capturas/familia.png" width="200"><br><b>Familia</b><br>Caras y nombres</td>
+<td align="center"><img src="capturas/mapa.png" width="200"><br><b>Mapa</b><br>Camino a pie</td>
+<td align="center"><img src="capturas/medicacion.png" width="200"><br><b>Medicación</b><br>Pastillas y horas</td>
+<td align="center"><img src="capturas/avisos-oscuro.png" width="200"><br><b>Avisos</b><br>En modo oscuro</td>
+</tr>
+</table>
+
 ## 🚀 Pruébala
 
 1. Abre <https://alejandro22410.github.io/prueba/>
