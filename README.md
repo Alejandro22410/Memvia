@@ -63,6 +63,28 @@ Yo me lo imagino como **una caja fuerte con llave para cada persona**: dentro es
 - **Sin cuenta:** la demostración no usa Firebase, así que no se guarda nada fuera del aparato.
 - **Lo que me falta:** los datos no están cifrados de extremo a extremo. Si se usara con pacientes de verdad, tendría que revisarlo con un adulto responsable.
 
+## 🛠️ ¿Con qué lo he hecho?
+
+Lo he hecho con **HTML** (la estructura), **CSS** (el diseño) y **JavaScript** (para que funcione). No uso ningún programa para compilarlo.
+
+| Archivo | Lenguaje | Qué hace |
+|---|---|---|
+| `index.html` | HTML | Estructura: botones, pestañas y formularios |
+| `privacidad.html` | HTML | La política de privacidad |
+| `css/styles.css` | CSS | Diseño: colores, tamaños, modo oscuro |
+| `js/app.js` | JavaScript | Lógica principal: familia, medicación, cuentas, demo |
+| `js/mapa.js` | JavaScript | El mapa y los marcadores |
+| `js/buscador.js` | JavaScript | El buscador de direcciones |
+| `js/geo.js` | JavaScript | Busca direcciones y calcula las rutas a pie |
+| `js/avisos.js` | JavaScript | Qué aviso toca, cuáles se perdieron y el calendario |
+| `js/demo.js` | JavaScript | Los datos de ejemplo inventados |
+| `js/config.js` | JavaScript | Datos de conexión con Firebase |
+| `sw.js` | JavaScript | Que funcione sin internet y las notificaciones |
+| `manifest.webmanifest` | JSON | Permite instalarla como app en el móvil |
+| `firestore.rules` | Reglas de Firebase | Cada persona solo ve sus datos |
+
+**Herramientas de otras personas que uso:** Leaflet (dibuja el mapa), OpenStreetMap (los mapas), Nominatim (buscar direcciones), OSRM (rutas a pie), Firebase (cuentas y datos) y Tabler Icons (iconos).
+
 ## 🔔 Los avisos
 
 Las tareas y las pastillas avisan con voz y con notificación. Si pasa la hora y no se marca, aparece un cuadro «Se te ha pasado hoy».
