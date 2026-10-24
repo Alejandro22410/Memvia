@@ -51,6 +51,18 @@ Memvia lo pone todo en una pantalla grande y sencilla. Un familiar o cuidador la
 - **Android (Chrome):** menú ⋮ → *Instalar aplicación*.
 - **iPhone (Safari):** Compartir → *Añadir a pantalla de inicio*.
 
+## ☁️ ¿Qué es Firebase y para qué lo uso?
+
+Firebase es un servicio de Google que usa Memvia para guardar las **cuentas** y los **datos**. Gracias a eso, el cuidador prepara la información en su móvil y la persona la ve en el suyo.
+
+Es como **una caja fuerte con llave para cada persona**: dentro están sus familiares, su medicación y sus recuerdos, y solo el dueño de la cuenta puede abrirla.
+
+- **Quién ve los datos:** solo el dueño. Esa regla está puesta en la propia base de datos.
+- **Dónde se guardan:** en servidores de Google en Europa.
+- **Control del usuario:** puede descargar sus datos o borrar la cuenta desde Ajustes.
+- **Sin cuenta:** la demostración no usa Firebase y no guarda nada fuera del aparato.
+- **Límite:** los datos no están cifrados de extremo a extremo. Para usarlo con pacientes reales habría que revisarlo con un adulto responsable.
+
 ## 🔔 Los avisos
 
 Las tareas y las pastillas avisan con voz y con notificación. Si pasa la hora y no se marca, aparece un cuadro «Se te ha pasado hoy».
