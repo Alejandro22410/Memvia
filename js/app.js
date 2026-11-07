@@ -582,6 +582,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     } catch (e) { auth = null; db = null; }
   }
   let currentUser = null;
+  let verifyTimer = null, verifyUntil = 0;   // comprobación automática del correo
   let demoMode = false;
   let unsubscribeSnapshot = null;
   let timersStarted = false;
@@ -633,7 +634,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   function showSaveError(message, ms) {
     const box = document.getElementById('save-error');
     clearTimeout(saveErrorTimer);
-    box.textContent = '⚠️ ' + (message || 'No se pudo guardar. Revisa tu conexión o los permisos de Firestore.');
+    box.textContent = (/^✅/.test(message || '') ? '' : '⚠️ ') + (message || 'No se pudo guardar. Revisa tu conexión o los permisos de Firestore.');
     box.style.display = 'block';
     saveErrorTimer = setTimeout(() => { box.style.display = 'none'; }, ms || 6000);
   }
@@ -758,6 +759,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
         startListening(user.uid);
       } else {
         currentUser = null;
+        stopVerifyPolling();
         stopListening();
         resetLocalState();   // que los datos de una persona no queden en memoria al entrar otra
         showGate();
@@ -855,11 +857,30 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   };
 
   // Aviso para confirmar el correo (no bloquea la app: solo recuerda que falta confirmarlo)
+  function stopVerifyPolling() { if (verifyTimer) { clearInterval(verifyTimer); verifyTimer = null; } }
+  // Mientras falte confirmar el correo, la app lo comprueba sola cada pocos segundos (hasta 15 minutos)
+  function checkVerified(manual) {
+    const msg = document.getElementById('verify-msg');
+    if (!currentUser || demoMode || !currentUser.reload) return Promise.resolve();
+    return currentUser.reload().then(function() {
+      if (currentUser && currentUser.emailVerified) {
+        stopVerifyPolling(); renderVerify();
+        showSaveError('✅ Correo confirmado. ¡Gracias!', 4000);
+      } else if (manual) msg.textContent = 'Todavía no está confirmado. Abre el enlace del correo y vuelve aquí.';
+    }, function() { if (manual) msg.textContent = 'No se pudo comprobar. Prueba más tarde.'; });
+  }
   function renderVerify() {
     const box = document.getElementById('verify-banner');
     if (!box) return;
-    box.hidden = !(currentUser && !demoMode && auth && currentUser.email && currentUser.emailVerified === false);
+    const falta = !!(currentUser && !demoMode && auth && currentUser.email && currentUser.emailVerified === false);
+    box.hidden = !falta;
+    if (!falta) { stopVerifyPolling(); return; }
+    if (!verifyTimer) {
+      verifyUntil = Date.now() + 15 * 60 * 1000;
+      verifyTimer = setInterval(function() { if (Date.now() > verifyUntil) stopVerifyPolling(); else checkVerified(false); }, 5000);
+    }
   }
+  document.addEventListener('visibilitychange', function() { if (!document.hidden && verifyTimer) checkVerified(false); });
   document.getElementById('verify-resend').onclick = function() {
     const msg = document.getElementById('verify-msg');
     if (!currentUser || !currentUser.sendEmailVerification) return;
@@ -867,13 +888,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       msg.textContent = err && err.code === 'auth/too-many-requests' ? 'Espera unos minutos antes de pedir otro.' : 'No se pudo enviar. Prueba más tarde.';
     });
   };
-  document.getElementById('verify-check').onclick = function() {
-    const msg = document.getElementById('verify-msg');
-    if (!currentUser || !currentUser.reload) return;
-    currentUser.reload().then(function() {
-      if (currentUser.emailVerified) { msg.textContent = ''; renderVerify(); } else msg.textContent = 'Todavía no está confirmado. Abre el enlace del correo y vuelve aquí.';
-    }, function() { msg.textContent = 'No se pudo comprobar. Prueba más tarde.'; });
-  };
+  document.getElementById('verify-check').onclick = function() { checkVerified(true); };
 
   /* ---- Avisos: voz, notificación del aparato y avisos perdidos ---- */
   const NOTIF_KEY = 'memvia_notif';
