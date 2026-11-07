@@ -76,6 +76,8 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     return DEFAULT_STYLE;
   }
   function speak(text) {
+    // Sin ningún toque previo el navegador no deja hablar (y lo marca como función obsoleta): se calla
+    if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
     try { const u = new SpeechSynthesisUtterance(text); u.lang = 'es-ES'; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
   }
   function toRad(d) { return d * Math.PI / 180; }
@@ -956,6 +958,29 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     document.removeEventListener('pointerdown', unlockSpeech, true);
     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis.speak(u); } catch (e) {}
   }, true);
+
+  /* ---- Probar la conexión con Firebase (para saber por qué no se guarda) ---- */
+  document.getElementById('diag-btn').onclick = async function() {
+    const out = document.getElementById('diag-msg'), btn = this;
+    if (demoMode || !db || !currentUser) { out.textContent = 'Esta prueba solo sirve con una cuenta (no en la demostración).'; return; }
+    const limite = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code: 'timeout' }), ms))]);
+    const ref = db.collection('memvia_users').doc(currentUser.uid);
+    const lineas = [];
+    const pinta = () => { out.textContent = lineas.join('\n'); };
+    btn.disabled = true;
+    lineas.push('Internet del navegador: ' + (navigator.onLine ? 'sí' : 'NO')); pinta();
+    let t0 = Date.now();
+    try {
+      await limite(ref.get({ source: 'server' }), 12000);
+      lineas.push('✅ Leer de Firebase: bien (' + (Date.now() - t0) + ' ms)'); pinta();
+      t0 = Date.now();
+      try { await limite(ref.set(buildState()), 12000); lineas.push('✅ Guardar en Firebase: bien (' + (Date.now() - t0) + ' ms). Mira ahora memvia_users en Firestore.'); }
+      catch (e) { lineas.push('❌ Guardar: ' + (e.code === 'timeout' ? 'no responde en 12 segundos' : e.code || 'error') + '. ' + (e.code === 'timeout' ? 'La conexión de escritura está bloqueada.' : firestoreHelp(e))); }
+    } catch (e) {
+      lineas.push('❌ Leer de Firebase: ' + (e.code === 'timeout' ? 'no responde en 12 segundos (la red o un bloqueador impide la conexión).' : (e.code || 'error') + '. ' + firestoreHelp(e)));
+    }
+    pinta(); btn.disabled = false;
+  };
 
   /* ---- Ajustes de avisos ---- */
   function refreshNotifUI() {
