@@ -6,7 +6,7 @@
 
 **Una app para ayudar a las personas que olvidan cosas a reconocer a su familia, saber dónde vive y recordar su día.**
 
-[**▶ Probar la app**](https://alejandro22410.github.io/prueba/)
+[**▶ Probar la app**](https://alejandro22410.github.io/Memvia/)
 
 Proyecto para **Coolest Projects** · Alejandro Narvaez Jaime · Codelearn Gava
 
@@ -44,7 +44,7 @@ Memvia lo pone todo en una pantalla grande y sencilla. Un familiar o cuidador la
 
 ## 🚀 Pruébala
 
-1. Abre <https://alejandro22410.github.io/prueba/>
+1. Abre <https://alejandro22410.github.io/Memvia/>
 2. Pulsa **«Probar sin cuenta (demostración)»**. Son datos inventados, no hace falta registrarse.
 
 **Instalarla en el móvil:**
