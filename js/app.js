@@ -7,6 +7,7 @@ import { DEMO_STATE, DEMO_KEY } from './demo.js';
 import { crearMapa } from './mapa.js';
 import { crearBuscador } from './buscador.js';
 import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
+import { escapar, limpiarEstado, telefonoLimpio, fotoSegura, mensajeAuth, contrasenaValida } from './seguridad.js';
 import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } from './avisos.js';
 
 (function() {
@@ -57,7 +58,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   let quizScore = { correct: 0, total: 0 };
   let selectedIcon = '';
 
-  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  const escapeHtml = escapar;   // escapa también las comillas (seguro dentro de atributos)
   function initials(name) { return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
   function avatarContent(f) {
     const fallback = f.icon ? f.icon : initials(f.name);
@@ -163,7 +164,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     actions.appendChild(listenBtn);
     if (f.phone) {
       const callLink = document.createElement('a');
-      callLink.href = 'tel:' + f.phone.replace(/\s+/g, '');
+      callLink.href = 'tel:' + telefonoLimpio(f.phone).replace(/\s+/g, '');
       callLink.innerHTML = '<i class="ti ti-phone" aria-hidden="true"></i>Llamar';
       actions.appendChild(callLink);
     }
@@ -235,7 +236,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       actions.appendChild(listenBtn);
       if (f.phone) {
         const callLink = document.createElement('a');
-        callLink.href = 'tel:' + f.phone.replace(/\s+/g, '');
+        callLink.href = 'tel:' + telefonoLimpio(f.phone).replace(/\s+/g, '');
         callLink.innerHTML = '<i class="ti ti-phone" aria-hidden="true"></i>Llamar';
         actions.appendChild(callLink);
         const waLink = document.createElement('a');
@@ -588,6 +589,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
 
   function buildState() { return { family, home, fsScale, reminders, meds, places, memories, userName, simpleMode, theme, consent: consent || null }; }
   function applyState(s) {
+    s = limpiarEstado(s);   // nada de lo que llegue (nube, navegador o copia) se usa sin revisar
     family = s.family || []; home = s.home || null; fsScale = s.fsScale || 1;
     reminders = s.reminders || []; meds = s.meds || []; places = s.places || [];
     memories = s.memories || []; userName = s.userName || ''; simpleMode = !!s.simpleMode; theme = s.theme || 'auto';
@@ -752,6 +754,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       if (user) {
         currentUser = user;
         showApp();
+        renderVerify();
         startListening(user.uid);
       } else {
         currentUser = null;
@@ -766,6 +769,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     document.getElementById('auth-email').disabled = true;
     document.getElementById('auth-password').disabled = true;
     document.getElementById('auth-signup-btn').disabled = true;
+    document.getElementById('auth-reset-btn').disabled = true;
     document.querySelector('#auth-form button[type="submit"]').disabled = true;
     const note = document.getElementById('auth-note');
     note.style.display = 'block';
@@ -808,7 +812,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     const errorEl = document.getElementById('auth-error');
     errorEl.style.display = 'none';
     auth.signInWithEmailAndPassword(email, pass).catch(err => {
-      errorEl.textContent = 'No se pudo entrar: ' + (err.message || 'revisa el email y la contraseña.');
+      errorEl.textContent = mensajeAuth(err, 'entrar');
       errorEl.style.display = 'block';
     });
   });
@@ -818,18 +822,57 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     const pass = document.getElementById('auth-password').value;
     const errorEl = document.getElementById('auth-error');
     errorEl.style.display = 'none';
-    if (!email || pass.length < 6) { errorEl.textContent = 'Escribe un email y una contraseña de al menos 6 caracteres.'; errorEl.style.display = 'block'; return; }
+    const fallo = !email ? 'Escribe tu correo.' : contrasenaValida(pass, email);
+    if (fallo) { errorEl.textContent = fallo; errorEl.style.display = 'block'; return; }
     if (!document.getElementById('auth-consent').checked) {
       errorEl.textContent = 'Para crear la cuenta marca la casilla de consentimiento. Sin ella no se pueden guardar datos de salud.';
       errorEl.style.display = 'block';
       return;
     }
     pendingConsent = { version: CONSENT_VERSION, at: new Date().toISOString() };
-    auth.createUserWithEmailAndPassword(email, pass).catch(err => {
+    auth.createUserWithEmailAndPassword(email, pass).then(function(cred) {
+      // Correo de confirmación: si falla, la cuenta sigue creada y se puede reenviar desde la app
+      if (cred && cred.user && cred.user.sendEmailVerification) cred.user.sendEmailVerification().catch(function() {});
+    }).catch(err => {
       pendingConsent = null;
-      errorEl.textContent = 'No se pudo crear la cuenta: ' + (err.message || '');
+      errorEl.textContent = mensajeAuth(err, 'crear');
       errorEl.style.display = 'block';
     });
+  };
+  // "He olvidado mi contraseña": siempre la misma respuesta, exista o no la cuenta
+  document.getElementById('auth-reset-btn').onclick = function() {
+    if (!auth) return;
+    const email = document.getElementById('auth-email').value.trim();
+    const errorEl = document.getElementById('auth-error'), okEl = document.getElementById('auth-ok');
+    errorEl.style.display = 'none'; okEl.style.display = 'none';
+    if (!email) { errorEl.textContent = 'Escribe primero tu correo y vuelve a pulsar «He olvidado mi contraseña».'; errorEl.style.display = 'block'; return; }
+    auth.sendPasswordResetEmail(email).then(function() { return null; }, function(err) { return err; }).then(function(err) {
+      const c = err && err.code;
+      if (c === 'auth/invalid-email' || c === 'auth/too-many-requests' || c === 'auth/network-request-failed') { errorEl.textContent = mensajeAuth(err, 'entrar'); errorEl.style.display = 'block'; return; }
+      okEl.textContent = 'Si ese correo tiene cuenta, te hemos enviado un enlace para elegir una contraseña nueva. Mira también en «Spam».';
+      okEl.style.display = 'block';
+    });
+  };
+
+  // Aviso para confirmar el correo (no bloquea la app: solo recuerda que falta confirmarlo)
+  function renderVerify() {
+    const box = document.getElementById('verify-banner');
+    if (!box) return;
+    box.hidden = !(currentUser && !demoMode && auth && currentUser.email && currentUser.emailVerified === false);
+  }
+  document.getElementById('verify-resend').onclick = function() {
+    const msg = document.getElementById('verify-msg');
+    if (!currentUser || !currentUser.sendEmailVerification) return;
+    currentUser.sendEmailVerification().then(function() { msg.textContent = 'Correo enviado. Mira también en «Spam».'; }, function(err) {
+      msg.textContent = err && err.code === 'auth/too-many-requests' ? 'Espera unos minutos antes de pedir otro.' : 'No se pudo enviar. Prueba más tarde.';
+    });
+  };
+  document.getElementById('verify-check').onclick = function() {
+    const msg = document.getElementById('verify-msg');
+    if (!currentUser || !currentUser.reload) return;
+    currentUser.reload().then(function() {
+      if (currentUser.emailVerified) { msg.textContent = ''; renderVerify(); } else msg.textContent = 'Todavía no está confirmado. Abre el enlace del correo y vuelve aquí.';
+    }, function() { msg.textContent = 'No se pudo comprobar. Prueba más tarde.'; });
   };
 
   /* ---- Avisos: voz, notificación del aparato y avisos perdidos ---- */
@@ -1067,7 +1110,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       name, relation,
       phone: document.getElementById('f-phone').value.trim(),
       address: place ? place.direccion : '',
-      photo: document.getElementById('f-photo').value.trim(),
+      photo: fotoSegura(document.getElementById('f-photo').value.trim()),
       birthday: document.getElementById('f-birthday').value,
       note: document.getElementById('f-note').value.trim(),
       icon: selectedIcon,
@@ -1220,7 +1263,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     if (!target) { speak('No hay ningún familiar con teléfono guardado.'); return; }
     speak(`Voy a llamar a ${target.name}, tu ${target.relation}.`);
     if (demoMode) { showSaveError('Es una demostración: aquí se llamaría a ' + target.name + '.'); return; }
-    window.location.href = 'tel:' + target.phone.replace(/\s+/g, '');
+    window.location.href = 'tel:' + telefonoLimpio(target.phone).replace(/\s+/g, '');
   };
   document.getElementById('speak-home-btn').onclick = function() {
     if (!home) { speak('Todavía no has configurado tu casa.'); return; }

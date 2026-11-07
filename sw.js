@@ -2,11 +2,11 @@
 // - Archivos de la propia app: primero red, y si no hay internet, copia guardada.
 // - Librerías externas (Leaflet, iconos, letras): primero copia guardada.
 // - Firebase, mapas, buscador de direcciones y rutas: no se tocan (siempre en directo).
-const VERSION = 'memvia-v7';
+const VERSION = 'memvia-v8';
 const SHELL = [
   './', 'index.html', 'privacidad.html', 'manifest.webmanifest',
   'css/styles.css',
-  'js/app.js', 'js/avisos.js', 'js/config.js', 'js/demo.js', 'js/buscador.js', 'js/mapa.js', 'js/geo.js',
+  'js/app.js', 'js/avisos.js', 'js/seguridad.js', 'js/config.js', 'js/demo.js', 'js/buscador.js', 'js/mapa.js', 'js/geo.js',
   'icons/icon192.png', 'icons/icon512.png', 'icons/icon-maskable-512.png'
 ];
 // Al tocar un aviso del aparato, se abre Memvia (o se vuelve a ella si ya estaba abierta).

@@ -96,6 +96,8 @@ Si la app está cerrada del todo, el móvil puede no avisar. Por eso se puede ll
 - Cada persona solo ve **sus** datos.
 - Se pide permiso explícito para guardar datos de salud, como la medicación.
 - Se pueden **descargar** los datos o **borrar la cuenta** cuando se quiera.
+- Se puede **recuperar la contraseña** por correo y se pide **confirmar el correo**.
+- Todo lo que entra a la app (también una copia de seguridad) se **revisa y limpia** antes de usarlo.
 - La demostración no guarda nada fuera del aparato.
 - Más detalle en la [política de privacidad](privacidad.html).
 
