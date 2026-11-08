@@ -309,6 +309,10 @@
         <p class="hint-text">Si Memvia está cerrada del todo, el móvil puede no avisar. El calendario sí: tras añadir el archivo, tus tareas y medicación sonarán cada día a su hora. El archivo contiene los nombres de tus medicamentos: guárdalo con cuidado.</p>
       </div>
       <div class="notif-box">
+        <h4>❓ Ayuda</h4>
+        <button id="guide-btn" class="secondary-btn" style="width:100%;"><i class="ti ti-help-circle" aria-hidden="true"></i> Ver la guía de inicio</button>
+      </div>
+      <div class="notif-box">
         <h4>🔧 Conexión con Firebase</h4>
         <p class="hint-text">Si tus datos no se guardan en la nube, pulsa aquí y dime qué sale.</p>
         <button id="diag-btn" class="secondary-btn" style="width:100%;"><i class="ti ti-plug-connected" aria-hidden="true"></i> Probar la conexión</button>
@@ -325,6 +329,22 @@
   <div id="profile-modal" role="dialog" aria-modal="true" aria-label="Ficha del familiar" style="display:none; position:fixed; inset:0; background:rgba(20,10,5,.45); z-index:50; align-items:center; justify-content:center; padding:20px;">
     <div id="profile-card" class="form-card" style="max-width:380px; width:100%; text-align:center; position:relative;"></div>
   </div>
+
+  <dialog id="guide-dlg" class="confirm-dlg guide-dlg" aria-labelledby="guide-title">
+    <form method="dialog">
+      <h2 id="guide-title" class="guide-title">👋 Bienvenido a Memvia</h2>
+      <p class="guide-intro">Para que la persona pueda usarla, prepárala tú primero. Son 3 pasos:</p>
+      <ol class="guide-steps">
+        <li><strong>Pon su casa.</strong> En Ajustes ⚙️, escribe la dirección y pulsa Buscar. Así se calcula el camino a pie hasta cada familiar.</li>
+        <li><strong>Añade a su familia.</strong> En la pestaña Familia, con nombre, parentesco, teléfono y dirección. Si quieres, una foto.</li>
+        <li><strong>Pon su medicación y sus tareas.</strong> Con la hora de cada una, y Memvia avisará.</li>
+      </ol>
+      <p class="guide-tip">💡 Cuando esté todo preparado, activa el <strong>modo simple</strong> (el botón de arriba): deja solo lo más importante, en botones grandes.</p>
+      <div class="confirm-actions">
+        <button type="submit" value="ok" id="guide-ok" class="primary-btn">Entendido, empezar</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="confirm-dlg" class="confirm-dlg" aria-labelledby="confirm-msg">
     <form method="dialog">

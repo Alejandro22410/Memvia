@@ -470,7 +470,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       const del = document.createElement('button');
       del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar: ' + r.text);
       del.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
-      del.onclick = () => { reminders = reminders.filter(x => x.id !== r.id); saveReminders(); renderReminders(); updateDashboard(); renderMissed(); };
+      del.onclick = async () => { if (!(await confirmDialog('¿Quitar «' + r.text + '» de tus tareas?', 'Sí, quitar'))) return; reminders = reminders.filter(x => x.id !== r.id); saveReminders(); renderReminders(); updateDashboard(); renderMissed(); };
       item.appendChild(del);
       list.appendChild(item);
     });
@@ -506,7 +506,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       const del = document.createElement('button');
       del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar: ' + m.name);
       del.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
-      del.onclick = () => { meds = meds.filter(x => x.id !== m.id); saveMeds(); renderMeds(); renderMissed(); };
+      del.onclick = async () => { if (!(await confirmDialog('¿Quitar «' + m.name + '» de tu medicación?', 'Sí, quitar'))) return; meds = meds.filter(x => x.id !== m.id); saveMeds(); renderMeds(); renderMissed(); };
       item.appendChild(del);
       list.appendChild(item);
     });
@@ -524,7 +524,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       del.className = 'reminder-delete'; del.setAttribute('aria-label', 'Eliminar recuerdo: ' + mem.title);
       del.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
       del.style.float = 'right';
-      del.onclick = () => { memories = memories.filter(x => x.id !== mem.id); saveMemories(); renderMemories(); };
+      del.onclick = async () => { if (!(await confirmDialog('¿Quitar el recuerdo «' + mem.title + '»?', 'Sí, quitar'))) return; memories = memories.filter(x => x.id !== mem.id); saveMemories(); renderMemories(); };
       item.appendChild(del);
       list.appendChild(item);
     });
@@ -658,7 +658,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   function renderAll() {
     applyTextSize(); applySimpleMode(); applyTheme(); renderIconPicker();
     document.getElementById('loading').style.display = 'none';
-    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays(); missedSig = '\0'; checkAlerts();
+    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays(); missedSig = '\0'; checkAlerts(); maybeShowGuide();
   }
 
   let consentPrompting = false;
@@ -958,6 +958,25 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     document.removeEventListener('pointerdown', unlockSpeech, true);
     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis.speak(u); } catch (e) {}
   }, true);
+
+  /* ---- Guía de inicio: se ve sola la primera vez que se entra con una cuenta vacía ---- */
+  const GUIDE_KEY = 'memvia_guide_seen';
+  function showGuide() {
+    const dlg = document.getElementById('guide-dlg');
+    if (!dlg || !dlg.showModal || dlg.open) return;
+    if (document.getElementById('confirm-dlg').open) {   // primero lo del consentimiento
+      const again = () => { document.getElementById('confirm-dlg').removeEventListener('close', again); setTimeout(showGuide, 200); };
+      document.getElementById('confirm-dlg').addEventListener('close', again);
+      return;
+    }
+    dlg.showModal();
+  }
+  document.getElementById('guide-dlg').addEventListener('close', function() { try { localStorage.setItem(GUIDE_KEY, '1'); } catch (e) {} });
+  function maybeShowGuide() {
+    let seen = false; try { seen = localStorage.getItem(GUIDE_KEY) === '1'; } catch (e) {}
+    if (!seen && !demoMode && !family.length && !home && document.getElementById('app').style.display !== 'none') showGuide();
+  }
+  document.getElementById('guide-btn').onclick = function() { document.getElementById('settings-modal').style.display = 'none'; showGuide(); };
 
   /* ---- Probar la conexión con Firebase (para saber por qué no se guarda) ---- */
   document.getElementById('diag-btn').onclick = async function() {

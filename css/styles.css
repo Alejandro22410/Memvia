@@ -472,3 +472,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 #app[data-theme="dark"] .verify-banner { background: #14204A; border-color: #8FA8FF; }
 #app[data-theme="dark"] .verify-actions button { background: #1E2D66; color: #fff; border-color: #8FA8FF; }
 @media (prefers-color-scheme: dark) { #app[data-theme="auto"] .verify-banner { background: #14204A; border-color: #8FA8FF; } #app[data-theme="auto"] .verify-actions button { background: #1E2D66; color: #fff; border-color: #8FA8FF; } }
+
+/* Guía de bienvenida */
+dialog.guide-dlg { max-width: 440px; max-height: 90vh; overflow-y: auto; }
+.guide-title { margin: 0 0 8px; font-family: var(--font-display); font-size: calc(22px * var(--fs-scale, 1)); }
+.guide-intro { margin: 0 0 8px; font-size: calc(16px * var(--fs-scale, 1)); }
+.guide-steps { margin: 0 0 12px; padding-left: 22px; display: grid; gap: 10px; font-size: calc(16px * var(--fs-scale, 1)); line-height: 1.4; }
+.guide-tip { margin: 0 0 16px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2, #F3EFFF); font-size: calc(15px * var(--fs-scale, 1)); }
