@@ -70,6 +70,22 @@ function recuerdo(m) {
   return { ...extras(m, k), id: id(m.id), title: txt(m.title, 100), text: txt(m.text, 1500) };
 }
 
+// ---- PIN de los Ajustes: nunca se guarda el número, solo una "huella" con sal ----
+export const pinValido = (p) => typeof p === 'string' && /^\d{4,6}$/.test(p);
+export function pinLimpio(v) {
+  return v && typeof v === 'object' && typeof v.salt === 'string' && typeof v.hash === 'string'
+    && /^[0-9a-f]{32}$/.test(v.salt) && /^[0-9a-f]{64}$/.test(v.hash) ? { salt: v.salt, hash: v.hash } : null;
+}
+const aHex = (buf) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+export function nuevaSal() { return aHex(crypto.getRandomValues(new Uint8Array(16))); }
+export async function hashPin(pin, sal) {
+  const clave = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(sal), iterations: 100000 }, clave, 256);
+  return aHex(bits);
+}
+export async function crearPin(pin) { const salt = nuevaSal(); return { salt, hash: await hashPin(pin, salt) }; }
+export async function comprobarPin(pin, guardado) { return !!guardado && (await hashPin(pin, guardado.salt)) === guardado.hash; }
+
 export function limpiarEstado(s) {
   s = s && typeof s === 'object' && !Array.isArray(s) ? s : {};
   const h = s.home && typeof s.home === 'object' ? s.home : null;
@@ -86,6 +102,7 @@ export function limpiarEstado(s) {
     userName: txt(s.userName, 60),
     simpleMode: !!s.simpleMode,
     theme: ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto',
+    pin: pinLimpio(s.pin),
     consent: c && typeof c.version === 'string' && typeof c.at === 'string' ? { version: c.version.slice(0, 20), at: c.at.slice(0, 40) } : null
   };
 }

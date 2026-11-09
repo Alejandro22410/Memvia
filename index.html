@@ -309,6 +309,14 @@
         <p class="hint-text">Si Memvia está cerrada del todo, el móvil puede no avisar. El calendario sí: tras añadir el archivo, tus tareas y medicación sonarán cada día a su hora. El archivo contiene los nombres de tus medicamentos: guárdalo con cuidado.</p>
       </div>
       <div class="notif-box">
+        <h4>🔒 PIN de los Ajustes</h4>
+        <p id="pin-status" class="hint-text" role="status"></p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="pin-set-btn" class="secondary-btn" type="button">Crear PIN</button>
+          <button id="pin-remove-btn" class="secondary-btn" type="button" style="display:none;">Quitar PIN</button>
+        </div>
+      </div>
+      <div class="notif-box">
         <h4>❓ Ayuda</h4>
         <button id="guide-btn" class="secondary-btn" style="width:100%;"><i class="ti ti-help-circle" aria-hidden="true"></i> Ver la guía de inicio</button>
       </div>
@@ -346,6 +354,21 @@
     </form>
   </dialog>
 
+  <dialog id="pin-dlg" class="confirm-dlg" aria-labelledby="pin-title">
+    <form id="pin-form" novalidate>
+      <h2 id="pin-title" style="margin:0 0 6px; font-size:19px; font-family: var(--font-display);">🔒 PIN</h2>
+      <p id="pin-msg" class="confirm-msg"></p>
+      <div id="pin-row1"><label class="f-label" for="pin-input" id="pin-label1">PIN</label><input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></div>
+      <div id="pin-row2" hidden><label class="f-label" for="pin-input2">Repite el PIN</label><input id="pin-input2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"></div>
+      <div id="pin-row-pass" hidden><label class="f-label" for="pin-pass">Tu contraseña de Memvia</label><input id="pin-pass" type="password" autocomplete="current-password"></div>
+      <p id="pin-error" role="alert" style="color:var(--danger, #b3261e); min-height:1.3em; margin:8px 0 0; font-size:14px;"></p>
+      <button type="button" id="pin-forgot" class="secondary-btn" style="width:100%; margin-top:6px;" hidden>He olvidado el PIN</button>
+      <div class="confirm-actions">
+        <button type="button" id="pin-cancel" class="secondary-btn">Cancelar</button>
+        <button type="submit" id="pin-ok" class="primary-btn">Aceptar</button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="confirm-dlg" class="confirm-dlg" aria-labelledby="confirm-msg">
     <form method="dialog">
       <p id="confirm-msg" class="confirm-msg"></p>

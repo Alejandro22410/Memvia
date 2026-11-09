@@ -2,7 +2,7 @@
 // - Archivos de la propia app: primero red, y si no hay internet, copia guardada.
 // - Librerías externas (Leaflet, iconos, letras): primero copia guardada.
 // - Firebase, mapas, buscador de direcciones y rutas: no se tocan (siempre en directo).
-const VERSION = 'memvia-v8';
+const VERSION = 'memvia-v9';
 const SHELL = [
   './', 'index.html', 'privacidad.html', 'manifest.webmanifest',
   'css/styles.css',

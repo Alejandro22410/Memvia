@@ -7,7 +7,7 @@ import { DEMO_STATE, DEMO_KEY } from './demo.js';
 import { crearMapa } from './mapa.js';
 import { crearBuscador } from './buscador.js';
 import { calcularRuta, formatoDistancia, minutosAndando } from './geo.js';
-import { escapar, limpiarEstado, telefonoLimpio, fotoSegura, mensajeAuth, contrasenaValida } from './seguridad.js';
+import { escapar, limpiarEstado, telefonoLimpio, fotoSegura, mensajeAuth, contrasenaValida, pinValido, crearPin, comprobarPin } from './seguridad.js';
 import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } from './avisos.js';
 
 (function() {
@@ -52,6 +52,8 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   let userName = '';
   let simpleMode = false;
   let theme = 'auto';
+  let pin = null;                // { salt, hash } del PIN de los Ajustes (nunca el número)
+  let pinHasta = 0;              // hasta cuándo está desbloqueado (milisegundos)
   let consent = null;            // { version, at }: prueba del consentimiento para datos de salud
   let pendingConsent = null;     // se rellena al crear cuenta y se guarda con el primer documento
   const CONSENT_VERSION = '2026-10-09';
@@ -590,12 +592,12 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   let timersStarted = false;
   const MAX_DOC_CHARS = 900000; // Firestore guarda hasta ~1 MB por documento
 
-  function buildState() { return { family, home, fsScale, reminders, meds, places, memories, userName, simpleMode, theme, consent: consent || null }; }
+  function buildState() { return { family, home, fsScale, reminders, meds, places, memories, userName, simpleMode, theme, pin: pin || null, consent: consent || null }; }
   function applyState(s) {
     s = limpiarEstado(s);   // nada de lo que llegue (nube, navegador o copia) se usa sin revisar
     family = s.family || []; home = s.home || null; fsScale = s.fsScale || 1;
     reminders = s.reminders || []; meds = s.meds || []; places = s.places || [];
-    memories = s.memories || []; userName = s.userName || ''; simpleMode = !!s.simpleMode; theme = s.theme || 'auto';
+    memories = s.memories || []; userName = s.userName || ''; simpleMode = !!s.simpleMode; theme = s.theme || 'auto'; pin = s.pin || null;
     consent = s.consent && typeof s.consent.version === 'string' && typeof s.consent.at === 'string' ? { version: s.consent.version, at: s.consent.at } : null;
   }
   function scheduleSave() {
@@ -672,7 +674,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   }
 
   function resetLocalState() {
-    family = []; home = null; reminders = []; meds = []; places = []; memories = []; userName = ''; simpleMode = false; theme = 'auto'; fsScale = 1; consent = null;
+    family = []; home = null; reminders = []; meds = []; places = []; memories = []; userName = ''; simpleMode = false; theme = 'auto'; fsScale = 1; consent = null; pin = null; pinHasta = 0;
     clearSelection(true); routeCache.clear();
     applyTextSize(); applySimpleMode(); applyTheme();
     renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard();
@@ -680,6 +682,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   }
 
   async function deleteAccount() {
+    if (!(await requirePin())) return;
     const msg = demoMode
       ? '¿Borrar los datos de la demostración de este dispositivo?'
       : '¿Eliminar tu cuenta de Memvia? Se borrarán tu cuenta y todos tus datos (familia, medicación, recuerdos...). No se puede deshacer.';
@@ -1040,7 +1043,84 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     fsScale = fsScale >= 1.3 ? 1 : Math.round((fsScale + 0.15) * 100) / 100;
     applyTextSize(); saveTextSize();
   };
-  document.getElementById('simple-mode-btn').onclick = function() {
+
+  // ---------- PIN de los Ajustes ----------
+  // Sirve para que una pulsación de la persona mayor no cambie ni borre cosas por error.
+  // No es una caja fuerte: la protección real de los datos es la cuenta y su contraseña.
+  const PIN_MINUTOS = 5;
+  let pinFallos = 0, pinBloqueo = 0;
+  const pinLibre = () => !pin || Date.now() < pinHasta;
+  function requirePin() { return pinLibre() ? Promise.resolve(true) : abrirPin('check'); }
+  function abrirPin(modo) {
+    return new Promise(resolve => {
+      const $ = id => document.getElementById(id);
+      const dlg = $('pin-dlg'), form = $('pin-form');
+      if (!dlg || !dlg.showModal) { resolve(false); return; }
+      const i1 = $('pin-input'), i2 = $('pin-input2'), pw = $('pin-pass'), err = $('pin-error');
+      let vista = modo, hecho = false;
+      const fin = v => { if (hecho) return; hecho = true; dlg.onclose = null; if (dlg.open) dlg.close(); resolve(v); };
+      const poner = v => {
+        vista = v; err.textContent = ''; i1.value = ''; i2.value = ''; pw.value = '';
+        $('pin-row1').hidden = v === 'forgot'; $('pin-row2').hidden = v !== 'create'; $('pin-row-pass').hidden = v !== 'forgot';
+        $('pin-forgot').hidden = v !== 'check';
+        $('pin-title').textContent = v === 'create' ? '🔒 Crear un PIN' : '🔒 Escribe el PIN';
+        $('pin-msg').textContent = v === 'create' ? 'Elige un PIN de 4 a 6 números. Así nadie cambia los Ajustes por error.'
+          : v === 'forgot' ? (demoMode ? 'Estás en la demostración: se quitará el PIN.' : 'Para quitar el PIN, escribe la contraseña de tu cuenta.')
+          : 'Los Ajustes están protegidos con un PIN.';
+        $('pin-label1').textContent = v === 'create' ? 'PIN nuevo' : 'PIN';
+        $('pin-ok').textContent = v === 'forgot' ? 'Quitar el PIN' : 'Aceptar';
+        if (v === 'forgot' && demoMode) $('pin-row-pass').hidden = true;
+        (v === 'forgot' && !demoMode ? pw : i1).focus();
+      };
+      const error = t => { err.textContent = t; };
+      form.onsubmit = async function(e) {
+        e.preventDefault();
+        if (vista === 'check') {
+          const falta = Math.ceil((pinBloqueo - Date.now()) / 1000);
+          if (falta > 0) { error('Demasiados intentos. Espera ' + falta + ' segundos.'); return; }
+          if (!pinValido(i1.value)) { error('El PIN son de 4 a 6 números.'); return; }
+          if (await comprobarPin(i1.value, pin)) { pinFallos = 0; pinHasta = Date.now() + PIN_MINUTOS * 60000; fin(true); return; }
+          pinFallos++; i1.value = '';
+          if (pinFallos >= 5) { pinFallos = 0; pinBloqueo = Date.now() + 30000; error('PIN incorrecto. Espera 30 segundos.'); }
+          else error('PIN incorrecto.');
+        } else if (vista === 'create') {
+          if (!pinValido(i1.value)) { error('El PIN son de 4 a 6 números.'); return; }
+          if (i1.value !== i2.value) { error('Los dos PIN no son iguales.'); return; }
+          pin = await crearPin(i1.value); pinHasta = Date.now() + PIN_MINUTOS * 60000; scheduleSave(); fin(true);
+        } else {
+          if (!demoMode) {
+            const u = auth && auth.currentUser;
+            if (!u || !pw.value) { error('Escribe tu contraseña.'); return; }
+            try { await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, pw.value)); }
+            catch (e2) { error(e2 && e2.code === 'auth/network-request-failed' ? 'No hay conexión.' : 'La contraseña no es correcta.'); return; }
+          }
+          pin = null; pinHasta = 0; scheduleSave(); fin(true);
+        }
+      };
+      $('pin-cancel').onclick = () => fin(false);
+      $('pin-forgot').onclick = () => poner('forgot');
+      dlg.onclose = () => fin(false);
+      poner(modo);
+      dlg.showModal(); (vista === 'forgot' ? pw : i1).focus();
+    });
+  }
+  function refreshPinUI() {
+    document.getElementById('pin-status').textContent = pin ? 'Los Ajustes piden un PIN. Se desbloquean ' + PIN_MINUTOS + ' minutos cada vez.' : 'Sin PIN. Con uno, nadie cambia ni borra cosas por error.';
+    document.getElementById('pin-set-btn').textContent = pin ? 'Cambiar PIN' : 'Crear PIN';
+    document.getElementById('pin-remove-btn').style.display = pin ? '' : 'none';
+  }
+  document.getElementById('pin-set-btn').onclick = async function() {
+    if (!(await requirePin())) return;
+    await abrirPin('create'); refreshPinUI();
+  };
+  document.getElementById('pin-remove-btn').onclick = async function() {
+    if (!(await requirePin())) return;
+    if (!(await confirmDialog('¿Quitar el PIN de los Ajustes?', 'Sí, quitar'))) return;
+    pin = null; pinHasta = 0; scheduleSave(); refreshPinUI();
+  };
+
+  document.getElementById('simple-mode-btn').onclick = async function() {
+    if (simpleMode && !(await requirePin())) return;   // salir del modo sencillo pide el PIN
     simpleMode = !simpleMode;
     applySimpleMode(); saveSimpleMode();
     if (simpleMode) activateTab('familia');
@@ -1102,13 +1182,20 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     const file = input.files && input.files[0]; if (!file) return;
     const img = new Image(), url = URL.createObjectURL(file);
     img.onload = function() {
-      const max = 320, k = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      const data = c.toDataURL('image/jpeg', 0.82); URL.revokeObjectURL(url);
+      // Se reduce hasta que la foto pese poco: así caben muchas en el espacio de la cuenta.
+      const OBJETIVO = 45000;   // caracteres (≈ 34 KB)
+      let data = '';
+      outer: for (const max of [320, 280, 240, 200, 160]) {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+        const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        for (const q of [0.75, 0.62, 0.5]) { data = c.toDataURL('image/jpeg', q); if (data.length <= OBJETIVO) break outer; }
+      }
+      URL.revokeObjectURL(url);
       document.getElementById('f-photo').value = data;
       const prev = document.getElementById('f-photo-prev'); prev.innerHTML = ''; prev.style.backgroundImage = 'url(' + data + ')';
     };
+    img.onerror = function() { URL.revokeObjectURL(url); showSaveError('No se pudo leer esa foto. Prueba con otra.'); };
     img.src = url;
   }
 
@@ -1242,15 +1329,16 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
 
   const homeSearch = crearBuscador('ha', '🏡 Tu dirección', 'Escribe tu dirección, pulsa Buscar y elige una opción.');
   document.getElementById('h-address-slot').appendChild(homeSearch.el);
-  document.getElementById('settings-btn').onclick = function() {
+  document.getElementById('settings-btn').onclick = async function() {
     const modal = document.getElementById('settings-modal');
     const show = modal.style.display === 'none';
+    if (show && !(await requirePin())) return;
     modal.style.display = show ? 'block' : 'none';
     if (show) {
       document.getElementById('u-name').value = userName || '';
       homeSearch.poner(home ? { direccion: home.address, lat: home.lat, lng: home.lng } : null);
       document.getElementById('home-error').style.display = 'none';
-      refreshNotifUI(); document.getElementById('ics-msg').textContent = '';
+      refreshNotifUI(); refreshPinUI(); document.getElementById('ics-msg').textContent = '';
       modal.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }
   };
@@ -1278,7 +1366,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   };
 
   document.getElementById('export-btn').onclick = function() {
-    const blob = new Blob([JSON.stringify(buildState(), null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(Object.assign(buildState(), { pin: null }), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = 'memvia-copia-seguridad.json';
@@ -1297,9 +1385,9 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       try { data = JSON.parse(reader.result); } catch (err) { data = null; }
       if (!data || typeof data !== 'object' || Array.isArray(data)) { showSaveError('Ese archivo no es una copia de Memvia.'); return; }
       if (!(await confirmDialog('Esto reemplaza todos los datos actuales por los de la copia.', 'Sí, reemplazar'))) return;
-      const keepConsent = consent;
+      const keepConsent = consent, keepPin = pin;
       applyState(data);
-      consent = keepConsent;   // el consentimiento no viaja en las copias: solo lo da la propia persona
+      consent = keepConsent; pin = keepPin;   // ni el consentimiento ni el PIN viajan en las copias   // el consentimiento no viaja en las copias: solo lo da la propia persona
       clearSelection(true); routeCache.clear();
       renderAll(); scheduleSave();
       document.getElementById('settings-modal').style.display = 'none';
@@ -1308,6 +1396,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   });
 
   document.getElementById('wipe-btn').onclick = async function() {
+    if (!(await requirePin())) return;
     if (!(await confirmDialog('¿Seguro que quieres borrar todos los datos de Memvia? Esto no se puede deshacer.', 'Sí, borrar todo'))) return;
     family = []; home = null; reminders = []; meds = []; places = []; memories = []; userName = ''; simpleMode = false; theme = 'auto'; fsScale = 1;
     clearSelection(true); routeCache.clear();
