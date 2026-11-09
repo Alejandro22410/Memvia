@@ -479,3 +479,7 @@ dialog.guide-dlg { max-width: 440px; max-height: 90vh; overflow-y: auto; }
 .guide-intro { margin: 0 0 8px; font-size: calc(16px * var(--fs-scale, 1)); }
 .guide-steps { margin: 0 0 12px; padding-left: 22px; display: grid; gap: 10px; font-size: calc(16px * var(--fs-scale, 1)); line-height: 1.4; }
 .guide-tip { margin: 0 0 16px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2, #F3EFFF); font-size: calc(15px * var(--fs-scale, 1)); }
+
+/* Avisos dentro de la página (sin tapar los botones) */
+.aviso-bar { margin: 8px 12px; padding: 10px 14px; border-radius: var(--r-md, 12px); background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border); font-size: 15px; line-height: 1.4; }
+.aviso-bar button { margin-top: 6px; min-height: 44px; }

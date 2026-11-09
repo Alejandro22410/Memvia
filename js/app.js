@@ -660,7 +660,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   function renderAll() {
     applyTextSize(); applySimpleMode(); applyTheme(); renderIconPicker();
     document.getElementById('loading').style.display = 'none';
-    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays(); missedSig = '\0'; checkAlerts(); maybeShowGuide();
+    renderFamily(); renderMap(); renderReminders(); renderMeds(); renderMemories(); updateDashboard(); updateOrientation(); checkBirthdays(); missedSig = '\0'; checkAlerts(); maybeShowGuide(); try { actualizarCopia(); } catch (e) { /* aún no listo */ }
   }
 
   let consentPrompting = false;
@@ -1365,7 +1365,24 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     renderMap(); updateDashboard();
   };
 
+  // ---- Aviso sin internet y recordatorio de copia de seguridad ----
+  function actualizarOffline() { document.getElementById('offline-bar').style.display = navigator.onLine ? 'none' : 'block'; }
+  window.addEventListener('online', actualizarOffline); window.addEventListener('offline', actualizarOffline); actualizarOffline();
+  const CLAVE_COPIA = 'memvia_copia_ultima';
+  function actualizarCopia() {
+    const bar = document.getElementById('backup-bar');
+    let ultima = 0, aviso = 0;
+    try { ultima = +localStorage.getItem(CLAVE_COPIA) || 0; aviso = +localStorage.getItem('memvia_copia_aviso') || 0; } catch (e) { /* ignorar */ }
+    const hayDatos = family.length + meds.length + reminders.length + memories.length > 0;
+    const dias = ultima ? Math.floor((Date.now() - ultima) / 86400000) : null;
+    const toca = hayDatos && !!currentUser && (dias === null || dias >= 30) && Date.now() - aviso > 7 * 86400000;
+    bar.style.display = toca ? 'block' : 'none';
+    document.getElementById('backup-text').textContent = dias === null ? '💾 Aún no has guardado una copia de seguridad de Memvia.' : '💾 Hace ' + dias + ' días que no guardas una copia de seguridad.';
+  }
+  document.getElementById('backup-now').onclick = function() { document.getElementById('export-btn').click(); };
   document.getElementById('export-btn').onclick = function() {
+    try { localStorage.setItem(CLAVE_COPIA, String(Date.now())); } catch (e) { /* ignorar */ }
+    document.getElementById('backup-bar').style.display = 'none';
     const blob = new Blob([JSON.stringify(Object.assign(buildState(), { pin: null }), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
