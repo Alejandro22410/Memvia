@@ -10,10 +10,59 @@
   "orientation": "portrait-primary",
   "background_color": "#FBF7F2",
   "theme_color": "#5B3FD0",
-  "categories": ["health", "lifestyle"],
+  "categories": [
+    "health",
+    "lifestyle"
+  ],
   "icons": [
-    { "src": "icons/icon192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "capturas/familia.png",
+      "sizes": "506x915",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Familia con su foto y su nombre"
+    },
+    {
+      "src": "capturas/mapa.png",
+      "sizes": "487x926",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mapa con la casa de cada uno"
+    },
+    {
+      "src": "capturas/medicacion.png",
+      "sizes": "497x926",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Medicación y avisos"
+    },
+    {
+      "src": "capturas/avisos-oscuro.png",
+      "sizes": "491x922",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Avisos en modo oscuro"
+    }
   ]
 }

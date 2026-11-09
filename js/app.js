@@ -52,6 +52,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   let userName = '';
   let simpleMode = false;
   let theme = 'auto';
+  const VERSION_APP = '1.0.0';   // versión de Memvia (semver); súbela con cada publicación
   let pin = null;                // { salt, hash } del PIN de los Ajustes (nunca el número)
   let pinHasta = 0;              // hasta cuándo está desbloqueado (milisegundos)
   let consent = null;            // { version, at }: prueba del consentimiento para datos de salud
@@ -1338,6 +1339,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       document.getElementById('u-name').value = userName || '';
       homeSearch.poner(home ? { direccion: home.address, lat: home.lat, lng: home.lng } : null);
       document.getElementById('home-error').style.display = 'none';
+      document.getElementById('app-version').textContent = 'Memvia versión ' + VERSION_APP;
       refreshNotifUI(); refreshPinUI(); document.getElementById('ics-msg').textContent = '';
       modal.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }
@@ -1375,7 +1377,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     try { ultima = +localStorage.getItem(CLAVE_COPIA) || 0; aviso = +localStorage.getItem('memvia_copia_aviso') || 0; } catch (e) { /* ignorar */ }
     const hayDatos = family.length + meds.length + reminders.length + memories.length > 0;
     const dias = ultima ? Math.floor((Date.now() - ultima) / 86400000) : null;
-    const toca = hayDatos && !!currentUser && (dias === null || dias >= 30) && Date.now() - aviso > 7 * 86400000;
+    const toca = hayDatos && !!currentUser && !demoMode && (dias === null || dias >= 30) && Date.now() - aviso > 7 * 86400000;
     bar.style.display = toca ? 'block' : 'none';
     document.getElementById('backup-text').textContent = dias === null ? '💾 Aún no has guardado una copia de seguridad de Memvia.' : '💾 Hace ' + dias + ' días que no guardas una copia de seguridad.';
   }

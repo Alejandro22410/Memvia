@@ -1,0 +1,20 @@
+{
+  "packageId": "io.github.alejandro22410.memvia",
+  "host": "alejandro22410.github.io",
+  "name": "Memvia",
+  "launcherName": "Memvia",
+  "display": "standalone",
+  "themeColor": "#5B3FD0",
+  "navigationColor": "#5B3FD0",
+  "backgroundColor": "#FBF7F2",
+  "enableNotifications": true,
+  "startUrl": "/Memvia/",
+  "iconUrl": "https://alejandro22410.github.io/Memvia/icons/icon512.png",
+  "maskableIconUrl": "https://alejandro22410.github.io/Memvia/icons/icon-maskable-512.png",
+  "webManifestUrl": "https://alejandro22410.github.io/Memvia/manifest.webmanifest",
+  "appVersionName": "1.0.0",
+  "appVersion": "1",
+  "orientation": "portrait",
+  "fallbackType": "customtabs",
+  "signingKey": { "path": "./memvia-upload.keystore", "alias": "memvia" }
+}

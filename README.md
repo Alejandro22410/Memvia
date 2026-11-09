@@ -118,3 +118,6 @@ Si la app está cerrada del todo, el móvil puede no avisar. Por eso se puede ll
 ---
 
 Hecho por **Alejandro Narvaez Jaime** (Codelearn Gava) para Coolest Projects.
+
+## Publicar en Play Store
+Todo lo necesario está en la carpeta [`store/`](store/): textos de la ficha, imagen de cabecera, capturas, permisos, respuestas del formulario de datos y una [guía paso a paso](store/GUIA-PUBLICAR.md). La versión actual es la 1.0.0 (ver [CHANGELOG](CHANGELOG.md)).
