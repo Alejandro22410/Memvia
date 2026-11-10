@@ -13,4 +13,4 @@ export const firebaseConfig = {
 
 // App Check: comprueba que las peticiones vienen de la app de verdad y no de un script ajeno.
 // Pega aquí la CLAVE DEL SITIO (pública) de reCAPTCHA v3. Si está vacía, App Check no se usa.
-export const appCheckSiteKey = "6LdnPxouAAAAADGiAgwfSONAyRap6o0ZimrM8AY7";
+export const appCheckSiteKey = "";   // App Check apagado: Firebase no deja registrar claves reCAPTCHA Classic
