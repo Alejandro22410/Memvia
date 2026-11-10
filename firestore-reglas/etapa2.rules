@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ETAPA 2: etapa 1 + solo se aceptan los campos que usa Memvia.
+    match /memvia_users/{uid} {
+      allow get, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['family', 'home', 'fsScale', 'reminders', 'meds', 'places',
+                                                  'memories', 'userName', 'simpleMode', 'theme', 'consent', 'pin']);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ETAPA 1: igual que las reglas simples, pero separando leer / guardar / borrar.
+    // Si esta etapa falla, el problema NO está en las comprobaciones de datos.
+    match /memvia_users/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create, update, delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

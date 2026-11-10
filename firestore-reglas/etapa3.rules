@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ETAPA 3 (final): etapa 2 + tipos y tamaños.
+    match /memvia_users/{uid} {
+      allow get, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+                            && datosValidos(request.resource.data);
+    }
+
+    function datosValidos(d) {
+      return d.keys().hasOnly(['family', 'home', 'fsScale', 'reminders', 'meds', 'places',
+                               'memories', 'userName', 'simpleMode', 'theme', 'consent', 'pin'])
+        && d.get('family', []) is list    && d.get('family', []).size() <= 200
+        && d.get('reminders', []) is list && d.get('reminders', []).size() <= 200
+        && d.get('meds', []) is list      && d.get('meds', []).size() <= 200
+        && d.get('places', []) is list    && d.get('places', []).size() <= 200
+        && d.get('memories', []) is list  && d.get('memories', []).size() <= 200
+        && (d.get('home', null) == null || d.get('home', null) is map)
+        && (d.get('consent', null) == null || d.get('consent', null) is map)
+        && (d.get('pin', null) == null || d.get('pin', null) is map)
+        && d.get('fsScale', 1) is number
+        && d.get('simpleMode', false) is bool
+        && d.get('userName', '') is string && d.get('userName', '').size() <= 60
+        && d.get('theme', 'auto') in ['auto', 'light', 'dark'];
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
