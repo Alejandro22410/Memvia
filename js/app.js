@@ -617,7 +617,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
     // Este aviso salta si pasan 10 segundos sin confirmación del servidor.
     const slowTimer = setTimeout(function() {
       slowSaveShown = true;
-      showSaveError('Tus cambios están en este aparato pero aún no llegan a Firebase. Puede que la red (colegio, wifi público, antivirus) bloquee la conexión. Prueba con otra red o con los datos del móvil.', 25000);
+      showSaveError('Tus cambios todavía no se han guardado en tu cuenta. Puede que esta red de internet no lo permita. Prueba con otra wifi o con los datos del móvil, y no cierres Memvia todavía.', 25000);
     }, 10000);
     db.collection('memvia_users').doc(currentUser.uid).set(state).then(function() {
       clearTimeout(slowTimer);
@@ -626,22 +626,22 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       clearTimeout(slowTimer);
       console.error('Error guardando en Firestore:', err);
       const code = err && err.code ? ' (' + err.code + ')' : '';
-      showSaveError('No se pudo guardar' + code + '. ' + firestoreHelp(err), 20000);
+      showSaveError('No se pudo guardar. ' + firestoreHelp(err), 20000);
     });
   }
   let saveErrorTimer = null;
   let slowSaveShown = false;
   function firestoreHelp(err) {
     const c = err && err.code;
-    if (c === 'permission-denied') return 'Firestore rechaza el acceso: publica las reglas de firestore.rules en Firebase.';
-    if (c === 'unavailable') return 'No hay conexión con Firebase. Revisa internet.';
-    if (c === 'failed-precondition' || c === 'not-found') return 'Falta crear la base de datos en Firebase (Firestore Database → Crear base de datos).';
-    return 'Revisa tu conexión y la configuración de Firestore.';
+    if (c === 'permission-denied') return 'No tienes permiso para guardar. Cierra sesión y vuelve a entrar. Si sigue igual, avisa a quien mantiene Memvia.';
+    if (c === 'unavailable') return 'No hay conexión. Revisa tu internet.';
+    if (c === 'failed-precondition' || c === 'not-found') return 'El servicio de Memvia no está listo. Inténtalo más tarde.';
+    return 'Revisa tu conexión e inténtalo otra vez.';
   }
   function showSaveError(message, ms) {
     const box = document.getElementById('save-error');
     clearTimeout(saveErrorTimer);
-    box.textContent = (/^✅/.test(message || '') ? '' : '⚠️ ') + (message || 'No se pudo guardar. Revisa tu conexión o los permisos de Firestore.');
+    box.textContent = (/^✅/.test(message || '') ? '' : '⚠️ ') + (message || 'No se pudo guardar. Revisa tu conexión.');
     box.style.display = 'block';
     saveErrorTimer = setTimeout(() => { box.style.display = 'none'; }, ms || 6000);
   }
@@ -715,7 +715,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
         showSaveError('Tus datos se han borrado. Para eliminar también tu usuario, cierra sesión, vuelve a entrar y repite «Eliminar mi cuenta».');
         if (auth) auth.signOut();
       } else {
-        showSaveError('Tus datos se han borrado, pero no se pudo eliminar el usuario. Abre una incidencia en el repositorio de GitHub (enlace en la política de privacidad).');
+        showSaveError('Tus datos se han borrado, pero no se pudo eliminar el usuario. Escribe a quien mantiene Memvia (el contacto está en la política de privacidad).');
       }
       return;
     }
@@ -734,7 +734,7 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
       document.getElementById('loading').style.display = 'none';
       console.error('Error leyendo de Firestore:', err);
       const code = err && err.code ? ' (' + err.code + ')' : '';
-      showSaveError('No se pueden leer tus datos' + code + '. ' + firestoreHelp(err), 20000);
+      showSaveError('No se pueden leer tus datos. ' + firestoreHelp(err), 20000);
     });
   }
 
