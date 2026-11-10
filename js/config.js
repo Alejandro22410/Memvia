@@ -10,3 +10,7 @@ export const firebaseConfig = {
   messagingSenderId: "933334746099",
   appId: "1:933334746099:web:5502d189c703a504dd4886"
 };
+
+// App Check: comprueba que las peticiones vienen de la app de verdad y no de un script ajeno.
+// Pega aquí la CLAVE DEL SITIO (pública) de reCAPTCHA v3. Si está vacía, App Check no se usa.
+export const appCheckSiteKey = "";

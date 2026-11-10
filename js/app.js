@@ -2,7 +2,7 @@
 // Estructura: tu web original (familia, medicación, tareas, recuerdos, juego, cuentas)
 // + mapa real con rutas a pie, buscador de direcciones, edición de familiares,
 // confirmaciones y modo demostración.
-import { firebaseConfig } from './config.js';
+import { firebaseConfig, appCheckSiteKey } from './config.js';
 import { DEMO_STATE, DEMO_KEY } from './demo.js';
 import { crearMapa } from './mapa.js';
 import { crearBuscador } from './buscador.js';
@@ -582,7 +582,10 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   const firebaseConfigured = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== 'TU_API_KEY';
   if (firebaseLoaded && firebaseConfigured) {
     try {
-      firebase.initializeApp(firebaseConfig); auth = firebase.auth(); db = firebase.firestore();
+      firebase.initializeApp(firebaseConfig);
+      // App Check (solo si hay clave y se cargó su librería; si algo falla, la app sigue igual)
+      try { if (appCheckSiteKey && firebase.appCheck) firebase.appCheck().activate(appCheckSiteKey, true); } catch (e3) { console.warn('App Check no se pudo activar', e3); }
+      auth = firebase.auth(); db = firebase.firestore();
       // Redes de colegios, antivirus y proxies suelen bloquear la conexión normal de Firestore.
       // Con esto, si falla, la app prueba otra forma de conectar (long polling) por su cuenta.
       try { db.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e2) { /* ya iniciado */ }
