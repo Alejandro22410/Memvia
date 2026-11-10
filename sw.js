@@ -2,11 +2,12 @@
 // - Archivos de la propia app: primero red, y si no hay internet, copia guardada.
 // - Librerías externas (Leaflet, iconos, letras): primero copia guardada.
 // - Firebase, mapas, buscador de direcciones y rutas: no se tocan (siempre en directo).
-const VERSION = 'memvia-v13';
+const VERSION = 'memvia-v14';
 const SHELL = [
   './', 'index.html', 'privacidad.html', 'manifest.webmanifest',
   'css/styles.css',
   'js/app.js', 'js/avisos.js', 'js/seguridad.js', 'js/config.js', 'js/demo.js', 'js/buscador.js', 'js/mapa.js', 'js/geo.js',
+  'vendor/leaflet/leaflet.js', 'vendor/leaflet/leaflet.css', 'vendor/tabler/tabler-icons.min.css', 'vendor/tabler/fonts/tabler-icons.woff2',
   'icons/icon192.png', 'icons/icon512.png', 'icons/icon-maskable-512.png'
 ];
 // Al tocar un aviso del aparato, se abre Memvia (o se vuelve a ella si ya estaba abierta).
@@ -20,7 +21,7 @@ self.addEventListener('notificationclick', (e) => {
   );
 });
 
-const CDN = ['unpkg.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com', 'www.gstatic.com'];
+const CDN = ['fonts.googleapis.com', 'fonts.gstatic.com', 'www.gstatic.com'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
