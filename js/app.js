@@ -52,6 +52,8 @@ import { estadoAvisos, claveAviso, cargarSonados, guardarSonados, crearICS } fro
   let userName = '';
   let simpleMode = false;
   let theme = 'auto';
+  // La prueba de conexión es para quien desarrolla: solo aparece abriendo la web con ?diag al final.
+  try { if (/[?&]diag\b/.test(location.search)) document.getElementById('diag-box').hidden = false; } catch (e) { /* ignorar */ }
   const VERSION_APP = '1.0.0';   // versión de Memvia (semver); súbela con cada publicación
   let pin = null;                // { salt, hash } del PIN de los Ajustes (nunca el número)
   let pinHasta = 0;              // hasta cuándo está desbloqueado (milisegundos)
